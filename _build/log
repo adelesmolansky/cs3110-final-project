@@ -1,0 +1,130 @@
+# dune build
+# OCAMLPARAM: unset
+# Workspace root:
+# /Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project
+$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune9fc048.output 2> /dev/null
+# Auto-detected concurrency: 16
+# disable binary cache
+$ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune4f6df2.output
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dyn
+#  ; merlin = true
+#  ; for_host = None
+#  ; fdo_target_exe = None
+#  ; build_dir = "default"
+#  ; toplevel_path =
+#      Some External "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/toplevel"
+#  ; ocaml_bin = External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin"
+#  ; ocaml = Ok External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocaml"
+#  ; ocamlc =
+#      External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt"
+#  ; ocamlopt =
+#      Ok External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt"
+#  ; ocamldep =
+#      Ok External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt"
+#  ; ocamlmklib =
+#      Ok
+#        External
+#          "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlmklib.opt"
+#  ; env =
+#      map
+#        { "DUNE_OCAML_HARDCODED" :
+#            "/Users/adelesmolansky/.opam/cs3110-2021fa/lib"
+#        ; "DUNE_OCAML_STDLIB" :
+#            "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/ocaml"
+#        ; "DUNE_SOURCEROOT" :
+#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project"
+#        ; "INSIDE_DUNE" :
+#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project/_build/default"
+#        ; "MANPATH" :
+#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project/_build/install/default/bin"
+#        ; "OCAMLFIND_IGNORE_DUPS_IN" :
+#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project/_build/install/default/lib"
+#        ; "OCAMLPATH" :
+#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project/_build/install/default/lib"
+#        ; "OCAMLTOP_INCLUDE_PATH" :
+#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project/_build/install/default/lib/toplevel"
+#        ; "OCAML_COLOR" : "always"
+#        ; "OPAMCOLOR" : "always"
+#        }
+#  ; findlib_path =
+#      [ External "/Users/adelesmolansky/.opam/cs3110-2021fa/lib" ]
+#  ; arch_sixtyfour = true
+#  ; natdynlink_supported = true
+#  ; supports_shared_libraries = true
+#  ; ocaml_config =
+#      { version = "4.12.0"
+#      ; standard_library_default =
+#          "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/ocaml"
+#      ; standard_library =
+#          "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/ocaml"
+#      ; standard_runtime = "the_standard_runtime_variable_was_deleted"
+#      ; ccomp_type = "cc"
+#      ; c_compiler = "cc"
+#      ; ocamlc_cflags = [ "-O2"; "-fno-strict-aliasing"; "-fwrapv" ]
+#      ; ocamlc_cppflags = [ "-D_FILE_OFFSET_BITS=64"; "-D_REENTRANT" ]
+#      ; ocamlopt_cflags = [ "-O2"; "-fno-strict-aliasing"; "-fwrapv" ]
+#      ; ocamlopt_cppflags = [ "-D_FILE_OFFSET_BITS=64"; "-D_REENTRANT" ]
+#      ; bytecomp_c_compiler =
+#          [ "cc"
+#          ; "-O2"
+#          ; "-fno-strict-aliasing"
+#          ; "-fwrapv"
+#          ; "-D_FILE_OFFSET_BITS=64"
+#          ; "-D_REENTRANT"
+#          ]
+#      ; bytecomp_c_libraries = [ "-lm"; "-lpthread" ]
+#      ; native_c_compiler =
+#          [ "cc"
+#          ; "-O2"
+#          ; "-fno-strict-aliasing"
+#          ; "-fwrapv"
+#          ; "-D_FILE_OFFSET_BITS=64"
+#          ; "-D_REENTRANT"
+#          ]
+#      ; native_c_libraries = [ "-lm" ]
+#      ; cc_profile = []
+#      ; architecture = "amd64"
+#      ; model = "default"
+#      ; int_size = 63
+#      ; word_size = 64
+#      ; system = "macosx"
+#      ; asm = [ "clang"; "-arch"; "x86_64"; "-Wno-trigraphs"; "-c" ]
+#      ; asm_cfi_supported = true
+#      ; with_frame_pointers = false
+#      ; ext_exe = ""
+#      ; ext_obj = ".o"
+#      ; ext_asm = ".s"
+#      ; ext_lib = ".a"
+#      ; ext_dll = ".so"
+#      ; os_type = "Unix"
+#      ; default_executable_name = "a.out"
+#      ; systhread_supported = true
+#      ; host = "x86_64-apple-darwin20.5.0"
+#      ; target = "x86_64-apple-darwin20.5.0"
+#      ; profiling = false
+#      ; flambda = false
+#      ; spacetime = false
+#      ; safe_string = true
+#      ; exec_magic_number = "Caml1999X029"
+#      ; cmi_magic_number = "Caml1999I029"
+#      ; cmo_magic_number = "Caml1999O029"
+#      ; cma_magic_number = "Caml1999A029"
+#      ; cmx_magic_number = "Caml1999Y029"
+#      ; cmxa_magic_number = "Caml1999Z029"
+#      ; ast_impl_magic_number = "Caml1999M029"
+#      ; ast_intf_magic_number = "Caml1999N029"
+#      ; cmxs_magic_number = "Caml1999D029"
+#      ; cmt_magic_number = "Caml1999T029"
+#      ; natdynlink_supported = true
+#      ; supports_shared_libraries = true
+#      ; windows_unicode = false
+#      }
+#  }
+$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/client.ml) > _build/default/src/.server.eobjs/client.ml.d
+$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -intf src/server.mli) > _build/default/src/.server.eobjs/server.mli.d
+$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -bin-annot -I src/.server.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o src/.server.eobjs/byte/dune__exe__Server.cmi -c -intf src/server.mli)
+$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -I src/.server.eobjs/byte -I src/.server.eobjs/native -intf-suffix .ml -no-alias-deps -opaque -open Dune__exe -o src/.server.eobjs/native/dune__exe__Server.cmx -c -impl src/server.ml)
+$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -o src/server.exe src/.server.eobjs/native/dune__exe.cmx src/.server.eobjs/native/dune__exe__Server.cmx)
