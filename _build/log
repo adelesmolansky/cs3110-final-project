@@ -1,11 +1,11 @@
-# dune build
+# dune build check
 # OCAMLPARAM: unset
 # Workspace root:
 # /Users/adelesmolansky/Desktop/College/FALL2021/cs3110/final_project
-$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune9fc048.output 2> /dev/null
+$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dunea7c05b.output 2> /dev/null
 # Auto-detected concurrency: 16
 # disable binary cache
-$ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune4f6df2.output
+$ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune269314.output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -123,8 +123,3 @@ $ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folder
 #      ; windows_unicode = false
 #      }
 #  }
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/client.ml) > _build/default/src/.server.eobjs/client.ml.d
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -intf src/server.mli) > _build/default/src/.server.eobjs/server.mli.d
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -bin-annot -I src/.server.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o src/.server.eobjs/byte/dune__exe__Server.cmi -c -intf src/server.mli)
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -I src/.server.eobjs/byte -I src/.server.eobjs/native -intf-suffix .ml -no-alias-deps -opaque -open Dune__exe -o src/.server.eobjs/native/dune__exe__Server.cmx -c -impl src/server.ml)
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -o src/server.exe src/.server.eobjs/native/dune__exe.cmx src/.server.eobjs/native/dune__exe__Server.cmx)
