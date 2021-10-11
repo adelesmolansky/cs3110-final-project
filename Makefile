@@ -9,9 +9,6 @@ utop:
 test:
 	OCAMLRUNPARAM=b dune exec test/main.exe
 
-play:
-	OCAMLRUNPARAM=b dune exec bin/main.exe
-
 check:
 	@bash check.sh
 
@@ -28,11 +25,3 @@ clean:
 
 doc:
 	dune build @doc
-
-server:
-	ocamlbuild -use-ocamlfind server_view.byte && ./server_view.byte -port ${PORT}
-#eg make PORT=9999 server
-
-client:
-	ocamlbuild -use-ocamlfind client_view.byte && ./client_view.byte -host ${HOST} -port ${PORT}
-#eg make HOST="127.0.0.1" PORT=9999 client

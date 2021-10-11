@@ -1,2 +1,3 @@
 (executable
- (name server))
+ (name server)
+ (libraries Async Core ANSITerminal))
