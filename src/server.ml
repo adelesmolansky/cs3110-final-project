@@ -21,11 +21,11 @@ type current_state = {
   output_string : output_string;
 }
 
-let init_server = { uid = -1 }
+let init_server () = { uid = -1 }
 
-let init_state =
+let init_state () =
   {
-    state = init_server;
+    state = init_server ();
     output = Some { uid = -1; output = "N/A" };
     output_string = "N/A";
   }
