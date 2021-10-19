@@ -18,12 +18,16 @@ type current_state = {
   output_string : output_string;
 }
 
-let init_server = raise (Failure "Unimplemented: server.init_server")
+let init_server = { uid = -1 }
 
-let init_state = raise (Failure "Unimplemented: server.init_state")
+let init_state =
+  {
+    state = init_server;
+    output = Some { uid = -1; output = "N/A" };
+    output_string = "N/A";
+  }
 
-let input_of_string =
-  raise (Failure "Unimplemented: server.input_of_string")
+let input_of_string str = { uid = -1; input = str }
 
-let string_of_output =
-  raise (Failure "Unimplemented: server.string_of_output")
+let string_of_output = function
+  | { uid = _; output = o } -> o
