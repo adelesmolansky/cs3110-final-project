@@ -1,3 +1,3 @@
 type client_state = { uid : int }
 
-let init_state () = raise (Failure "Unimplemented: client.init_state")
+let init_state () = { uid = -1 }
