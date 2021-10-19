@@ -1,6 +1,11 @@
-TODO:
-Write instructions on how to install and build your system. 
-This file should include any commands your PM needs to run to install OPAM packages, etc. 
+Start the Server:
+  1. Run the following commands in a terminal to get the server running
+    cd src
+    dune exec ./server.exe 
+  2. In another terminal, run the following command to get the IP address of your computer where the server is running
+    ifconffig
+  3. Find en0 and locate the inet (ex: 10.49.62.59). This is the IP address that someone else can use to connect to your server
 
-If your PM is running on a different OS than you, and if that becomes a problem, 
-then use the 3110 virtual machine (available in an appendix to the textbook) as a neutral ground you can both use.
+Start the Client:
+  TODO!
+    

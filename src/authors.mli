@@ -1,6 +1,6 @@
-(** CS 3110 Fall 2021 Final Project: Instant Messaging 
+(** CS 3110 Fall 2021 Final Project: Instant Messaging
 
-    @author Adele Smolansky (as2953) 
+    @author Adele Smolansky (as2953)
     @author David Thuman (dmt93)
     @author Taylor Stephens (tms279)
     @author Lyon (JJ) Li (lbl53) *)
@@ -22,13 +22,12 @@
 
    Signed: 
    - Adele Smolansky
-   - 
-   - 
-   - 
+   - David Thuman
+   - Taylor Stephens
+   - Lyon (JJ) Li
 
  ************************************************************)
 
- val hours_worked : int
- (** [hours_worked] is the number of hours each student worked on this 
-  assignment in the last sprint. *)
- 
+val hours_worked : int
+(** [hours_worked] is the number of hours each student worked on this
+    assignment in the last sprint. *)

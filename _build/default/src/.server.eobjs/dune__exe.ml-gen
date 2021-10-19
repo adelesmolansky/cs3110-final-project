@@ -6,5 +6,13 @@ module Authors = Dune__exe__Authors
 module Client = Dune__exe__Client
 
 
+(** @canonical Dune__exe.Client_view *)
+module Client_view = Dune__exe__Client_view
+
+
 (** @canonical Dune__exe.Server *)
 module Server = Dune__exe__Server
+
+
+(** @canonical Dune__exe.Server_view *)
+module Server_view = Dune__exe__Server_view
