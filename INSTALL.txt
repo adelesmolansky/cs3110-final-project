@@ -7,5 +7,8 @@ Start the Server:
   3. Find en0 and locate the inet (ex: 10.49.62.59). This is the IP address that someone else can use to connect to your server
 
 Start the Client:
-  TODO!
+  make client
+
+  Comment:  At the moment, both the host address and the port number are hard coded into the main () function.
+            After starting the server and checking these values, replace them into the client_view.ml file.
     
