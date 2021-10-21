@@ -1,14 +1,10 @@
 Start the Server:
-  1. Run the following commands in a terminal to get the server running
-    cd src
-    dune exec ./server.exe 
-  2. In another terminal, run the following command to get the IP address of your computer where the server is running
-    ifconffig
-  3. Find en0 and locate the inet (ex: 10.49.62.59). This is the IP address that someone else can use to connect to your server
-
+  make server
 Start the Client:
   make client
 
-  Comment:  At the moment, both the host address and the port number are hard coded into the main () function.
-            After starting the server and checking these values, replace them into the client_view.ml file.
+  Comment:  Open two terminal windows, one for the server and one for the client. 
+            Run "make client" on the client terminal window and then run 
+            "make server" on the server window. Type a username in the client window
+            and watch the response show up on the server window to show that it has been acknowledged.
     
