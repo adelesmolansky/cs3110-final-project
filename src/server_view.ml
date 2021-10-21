@@ -10,7 +10,7 @@ let rec connection_handler addr r w =
         printf [] "Error reading server\n";
         return ()
     | `Ok line ->
-        print_endline ("received: " ^ line);
+        print_string [] "received";
         loop r w
   in
   loop r w
