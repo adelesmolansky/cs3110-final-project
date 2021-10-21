@@ -3,14 +3,15 @@ open Async_unix
 open ANSITerminal
 
 let rec connection_handler addr r w =
-  let () = print_string [] "Client" in
+  let () = print_endline "Client \n" in
   let rec repeat r w =
     Reader.read_line r >>= function
     | `Eof ->
-        print_string [] "Error: cannot connect to server";
+        print_endline "Error: reading from server\n";
         return ()
     | `Ok line ->
-        print_string [] "Received input";
+        print_endline ("received: " ^ line ^ "\n");
+
         repeat r w
   in
   repeat r w
@@ -33,8 +34,8 @@ let run port =
 let reg = [ Foreground White ]
 
 let main () =
-  print_string reg "Starting the chat server ... \n";
-  print_string reg "> ";
+  print_endline "Starting the chat server ... \n";
+  print_endline "> ";
   Command.async ~summary:"" (Command.Param.return (fun () -> run 9999))
   |> Command.run
 

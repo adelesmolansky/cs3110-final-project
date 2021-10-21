@@ -11,7 +11,7 @@ let help_message = ""
 let rec read r =
   Reader.read_line r >>= function
   | `Eof ->
-      printf [ Foreground Red ] "Server error, please try again. \n";
+      print_endline "Server error, please try again. \n";
       exit 0
   | `Ok line -> return ()
 
@@ -19,7 +19,7 @@ let rec send_msg w =
   let stdin = Lazy.force Reader.stdin in
   Reader.read_line stdin >>= function
   | `Eof ->
-      printf [ Foreground Red ] "Error reading stdin\n";
+      print_endline "Error reading stdin\n";
       return ()
   | `Ok line -> return ()
 
@@ -27,7 +27,7 @@ let rec read_usern r w =
   let input = Lazy.force Reader.stdin in
   Reader.read_line input >>= function
   | `Eof ->
-      printf [] "Error reading stdin\n";
+      print_endline "Error reading stdin\n";
       read_usern r w
   | `Ok line -> check_username r w line
 
@@ -38,12 +38,10 @@ and check_username r w str =
     | None -> false
   in
   if t1 then (
-    print_string [ Foreground Red ]
-      "Error: username must contain no blank spaces!";
+    print_endline "Error: username must contain no blank spaces!";
     read_usern r w)
   else if String.length str = 0 then (
-    print_string [ Foreground Red ]
-      "Error: username must contain characters!";
+    print_endline "Error: username must contain characters!";
     read_usern r w)
   else (
     Writer.write_line w "Nice username!";
@@ -52,7 +50,7 @@ and check_username r w str =
 and check_server r w =
   Reader.read_line r >>= function
   | `Eof ->
-      printf [] "Error reading server\n";
+      print_endline "Error reading server\n";
       read_usern r w
   | `Ok line -> create_user line r w
 
@@ -65,7 +63,7 @@ let read_write_loop r w =
 
 let chat _ r w =
   read_usern r w >>= fun () ->
-  print_string [ Foreground Blue ] "Welcome!";
+  print_endline "Welcome!";
   read_write_loop r w;
   Deferred.never ()
 
@@ -78,9 +76,9 @@ let tcp host port =
 let reg = [ Foreground White ]
 
 let main () =
-  print_string reg "Welcome to Caml Chat!\n";
-  print_string reg "Please enter your username,\n";
-  print_string [ Foreground Blue ] ">> ";
+  print_endline "Welcome to Caml Chat!\n";
+  print_endline "Please enter your username,\n";
+  print_endline ">> ";
   Command.async ~summary:""
     (Command.Param.return (fun () -> tcp "0.0.0.0" 9999))
   |> Command.run
