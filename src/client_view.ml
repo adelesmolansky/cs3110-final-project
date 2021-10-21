@@ -82,7 +82,7 @@ let main () =
   print_string reg "Please enter your username,\n";
   print_string [ Foreground Blue ] ">> ";
   Command.async ~summary:""
-    (Command.Param.return (fun () -> tcp "127.0.0.1" 8080))
+    (Command.Param.return (fun () -> tcp "0.0.0.0" 9999))
   |> Command.run
 
 let () = main ()
