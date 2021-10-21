@@ -3,17 +3,17 @@ open Async_unix
 open ANSITerminal
 
 let rec connection_handler addr r w =
-  let () = print_string [] "New client \n" in
-  let rec loop r w =
+  let () = print_string [] "Client" in
+  let rec repeat r w =
     Reader.read_line r >>= function
     | `Eof ->
-        printf [] "Error reading server\n";
+        print_string [] "Error: cannot connect to server";
         return ()
     | `Ok line ->
-        print_string [] "received";
-        loop r w
+        print_string [] "Received input";
+        repeat r w
   in
-  loop r w
+  repeat r w
 
 let create_tcp port =
   let host_and_port =
