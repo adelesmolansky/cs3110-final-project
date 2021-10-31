@@ -27,6 +27,8 @@ let welcome_messages msg =
        friends. ADD MORE DETAILS HERE!"
   else print_endline ""
 
+(* [read r] keeps reading the pipe [r] from the server until the server
+   is successfully connected *)
 let rec read r =
   Reader.read_line r >>= function
   | `Eof ->
@@ -34,6 +36,9 @@ let rec read r =
       exit 0
   | `Ok line -> return ()
 
+(* [send_msg w] converts the standard input to server input by trimming
+   white space and then recursively calls send_msg to send the inputs to
+   the server. *)
 let rec send_msg w =
   let stdin = Lazy.force Reader.stdin in
   Reader.read_line stdin >>= function
@@ -47,6 +52,8 @@ let read_write_loop r w =
   don't_wait_for (read r);
   ()
 
+(* [read_usern r w] checks if the user has properly entered a username
+   and recursively calls read_user until the username rules are met. *)
 let rec read_usern r w =
   let input = Lazy.force Reader.stdin in
   Reader.read_line input >>= function
@@ -77,6 +84,9 @@ and check_server r w = return ()
 
 and create_user res r w = return ()
 
+(* [read_login_or_signup r w] checks if the user wants to log in or sign
+   up and recursively calls read_login_or_signup until the user has made
+   a proper decision. *)
 let rec read_login_or_signup r w =
   let input = Lazy.force Reader.stdin in
   Reader.read_line input >>= function
