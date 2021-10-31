@@ -4,7 +4,3 @@ module Client = Dune__exe__Client
 
 (** @canonical Dune__exe.Client_view *)
 module Client_view = Dune__exe__Client_view
-
-
-(** @canonical Dune__exe.Login_signup *)
-module Login_signup = Dune__exe__Login_signup
