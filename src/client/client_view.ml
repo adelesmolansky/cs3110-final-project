@@ -1,7 +1,6 @@
 open Async
 open ANSITerminal
 open Client
-open Login_signup
 
 (* [st] is the initial state of the client. *)
 let st = "ref (init_state ())"
@@ -26,7 +25,7 @@ let read_write_loop r w =
   don't_wait_for (read r);
   ()
 
-  let rec read_usern r w =
+let rec read_usern r w =
     let input = Lazy.force Reader.stdin in
     Reader.read_line input >>= function
     | `Eof ->
@@ -34,7 +33,7 @@ let read_write_loop r w =
         read_usern r w
     | `Ok line -> check_username r w line
   
-  and check_username r w str =
+and check_username r w str =
     let t1 =
       match String.index_opt str ' ' with
       | Some _ -> true

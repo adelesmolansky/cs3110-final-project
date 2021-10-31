@@ -1,9 +1,6 @@
-type client_state = {
-  uid : int;
-  logged_in : bool;
-}
+type client_state = { uid : int }
 
-let init_state () = { uid = -1; logged_in = false }
+let init_state () = { uid = -1 }
 
 let welcome_messages msg =
   if msg == 0 then
