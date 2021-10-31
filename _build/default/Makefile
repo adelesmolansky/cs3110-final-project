@@ -6,6 +6,12 @@ build:
 utop:
 	OCAMLRUNPARAM=b dune utop src
 
+client:
+	ocamlbuild -use-ocamlfind src/client_view.byte && ./client_view.byte
+
+server: 
+	ocamlbuild -use-ocamlfind src/server_view.byte && ./server_view.byte
+
 test:
 	OCAMLRUNPARAM=b dune exec test/main.exe
 
@@ -16,8 +22,8 @@ finalcheck:
 	@bash check.sh final
 
 zip:
-	rm -f finlproject.zip
-	zip -r finlproject.zip . -x@exclude.lst
+	rm -f finalproject.zip
+	zip -r finalproject.zip . -x@exclude.lst
 
 clean:
 	dune clean
