@@ -1,3 +1,6 @@
-type client_state = { uid : int }
+type client_state = {
+  uname : string;
+  pwd : string;
+}
 
-let init_state () = { uid = -1 }
+let init_state () = { uname = ""; pwd = "" }

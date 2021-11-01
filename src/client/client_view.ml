@@ -3,7 +3,7 @@ open ANSITerminal
 open Client
 
 (* [st] is the initial state of the client. *)
-let st = "ref (init_state ())"
+let client_st = ref (init_state ())
 
 let welcome_messages = function
   | "INIT" ->
