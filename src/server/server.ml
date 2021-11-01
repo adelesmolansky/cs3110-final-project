@@ -1,9 +1,11 @@
 open Core
 open Async
 
+type uname_and_pwds = (string * string) list
+
 type server_state = {
-  uname_and_pwds : (string * int) list;
-  curr_users : int list;
+  uname_and_pwds : uname_and_pwds;
+  curr_users : string list;
 }
 
 type output = {

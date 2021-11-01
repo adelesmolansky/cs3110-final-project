@@ -1,5 +1,11 @@
+(* [uname_and_pwds] is the list of usernames and passwords *)
+type uname_and_pwds = (string * string) list
+
 (* [server_state] is the current state of the server *)
-type server_state = { uid : int }
+type server_state = {
+  uname_and_pwds : uname_and_pwds;
+  curr_users : string list;
+}
 
 (* [output] is the output from the server to the user with [uid] *)
 type output = {
@@ -36,3 +42,17 @@ val input_of_string : string -> input
 
 (* [string_of_output out] is the corresponding string of [out] *)
 val string_of_output : output -> string
+
+(* [insert_al k v lst] is an association list that binds key [k] to
+   value [v] and otherwise is the same as [lst] *)
+val insert_al : string -> string -> uname_and_pwds -> uname_and_pwds
+
+(* [insert_l v lst] is a list that adds value [v] to [lst] *)
+val insert_l : string -> string list -> string list
+
+(* [new_user_pwd] adds a username and password to the association list
+   that stores all current usernames and passwords*)
+val new_user_pwd : string -> string -> server_state -> uname_and_pwds
+
+(* [new_user_in_room] adds a username to the list of current users*)
+val new_user_in_room : string -> server_state -> string list
