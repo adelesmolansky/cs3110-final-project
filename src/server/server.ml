@@ -1,7 +1,10 @@
 open Core
 open Async
 
-type server_state = { uid : int }
+type server_state = {
+  uname_and_pwds : (string * int) list;
+  curr_users : int list;
+}
 
 type output = {
   uid : int;
@@ -21,7 +24,7 @@ type current_state = {
   output_string : output_string;
 }
 
-let init_server () = { uid = -1 }
+let init_server () = { uname_and_pwds = []; curr_users = [] }
 
 let init_state () =
   {
@@ -34,3 +37,11 @@ let input_of_string str = { uid = -1; input = str }
 
 let string_of_output = function
   | { uid = _; output = o } -> o
+
+let insert_al k v lst = (k, v) :: lst
+
+let insert_l v lst = v :: lst
+
+let new_user_pwd uname pwd st = insert_al uname pwd st.uname_and_pwds
+
+let new_user_in_room uname st = insert_l uname st.curr_users

@@ -1,11 +1,11 @@
-# dune build
+# dune build check
 # OCAMLPARAM: unset
 # Workspace root:
 # /Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project
-$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dunebb171e.output 2> /dev/null
+$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune3912bc.output 2> /dev/null
 # Auto-detected concurrency: 16
 # disable binary cache
-$ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune2d53ce.output
+$ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune03f7d2.output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
