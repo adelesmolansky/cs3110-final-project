@@ -1,20 +1,11 @@
 # dune build
 # OCAMLPARAM: unset
-<<<<<<< HEAD
-# Workspace root:
-# /Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project
-$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune4b452f.output 2> /dev/null
-# Auto-detected concurrency: 16
-# disable binary cache
-$ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dunef7f4f5.output
-=======
 # Workspace root: "/Users/taylorstephens/OneDrive - Cornell University/CS
 # 3110/Final Project/cs3110-final-project"
-$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/gc/dvl7wpg156v5m4ggxv93_lm40000gn/T/dunee71b19.output 2> /dev/null
+$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/gc/dvl7wpg156v5m4ggxv93_lm40000gn/T/duned31dfe.output 2> /dev/null
 # Auto-detected concurrency: 12
 # disable binary cache
-$ /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/gc/dvl7wpg156v5m4ggxv93_lm40000gn/T/dune3ad29a.output
->>>>>>> f662158268a8f4f5ec774108589f56f067d72621
+$ /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/gc/dvl7wpg156v5m4ggxv93_lm40000gn/T/dune79507d.output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -132,33 +123,4 @@ $ /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folder
 #      ; windows_unicode = false
 #      }
 #  }
-<<<<<<< HEAD
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/state.ml) > _build/default/src/.authors.eobjs/state.ml.d
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/authors.ml) > _build/default/src/.authors.eobjs/authors.ml.d
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/client/client.ml) > _build/default/src/client/.client.eobjs/client.ml.d
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/client/client_view.ml) > _build/default/src/client/.client.eobjs/client_view.ml.d
-> File "src/client/client_view.ml", line 98, characters 0-3:
-> 98 | and check_server r w = return ()
->      ^^^
-> Error: Syntax error: ')' expected
-> File "src/client/client_view.ml", line 92, characters 7-8:
-> 92 |   else (
->             ^
->   This '(' might be unmatched
-[2]
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -intf src/authors.mli) > _build/default/src/.authors.eobjs/authors.mli.d
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -I src/.authors.eobjs/byte -no-alias-deps -opaque -o src/.authors.eobjs/byte/dune__exe.cmo -c -impl src/.authors.eobjs/dune__exe.ml-gen)
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -bin-annot -I src/.authors.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o src/.authors.eobjs/byte/dune__exe__Authors.cmi -c -intf src/authors.mli)
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -I src/.authors.eobjs/byte -I src/.authors.eobjs/native -intf-suffix .ml-gen -no-alias-deps -opaque -o src/.authors.eobjs/native/dune__exe.cmx -c -impl src/.authors.eobjs/dune__exe.ml-gen)
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -I src/.authors.eobjs/byte -I src/.authors.eobjs/native -intf-suffix .ml -no-alias-deps -opaque -open Dune__exe -o src/.authors.eobjs/native/dune__exe__Authors.cmx -c -impl src/authors.ml)
-$ (cd _build/default && /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -o src/authors.exe src/.authors.eobjs/native/dune__exe.cmx src/.authors.eobjs/native/dune__exe__Authors.cmx)
-=======
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/authors.ml) > _build/default/src/.authors.eobjs/authors.ml.d
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/state.ml) > _build/default/src/.authors.eobjs/state.ml.d
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -intf src/authors.mli) > _build/default/src/.authors.eobjs/authors.mli.d
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -I src/.authors.eobjs/byte -no-alias-deps -opaque -o src/.authors.eobjs/byte/dune__exe.cmo -c -impl src/.authors.eobjs/dune__exe.ml-gen)
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -bin-annot -I src/.authors.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o src/.authors.eobjs/byte/dune__exe__Authors.cmi -c -intf src/authors.mli)
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -I src/.authors.eobjs/byte -I src/.authors.eobjs/native -intf-suffix .ml-gen -no-alias-deps -opaque -o src/.authors.eobjs/native/dune__exe.cmx -c -impl src/.authors.eobjs/dune__exe.ml-gen)
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -I src/.authors.eobjs/byte -I src/.authors.eobjs/native -intf-suffix .ml -no-alias-deps -opaque -open Dune__exe -o src/.authors.eobjs/native/dune__exe__Authors.cmx -c -impl src/authors.ml)
-$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -o src/authors.exe src/.authors.eobjs/native/dune__exe.cmx src/.authors.eobjs/native/dune__exe__Authors.cmx)
->>>>>>> f662158268a8f4f5ec774108589f56f067d72621
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/client/client_view.ml) > _build/default/src/client/.client.eobjs/client_view.ml.d

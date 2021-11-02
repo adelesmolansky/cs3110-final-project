@@ -1,7 +1,6 @@
 open Async
 open ANSITerminal
 open Client
-open State
 
 type message =
   | INIT
