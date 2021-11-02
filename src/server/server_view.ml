@@ -1,10 +1,6 @@
 open Async
 open Async_unix
 open ANSITerminal
-open Server
-
-(* [server_st] is the initial state of the server. *)
-let server_st = ref (init_state ())
 
 let rec connection_handler addr r w =
   let () = print_endline "Client \n" in

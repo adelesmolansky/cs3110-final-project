@@ -1,6 +1,7 @@
 open Async
 open ANSITerminal
 open Client
+open State
 
 type message =
   | INIT
@@ -8,7 +9,9 @@ type message =
   | SIGN_UP
   | ENTER_CHAT
 
-type method_to_enter_chat = NEW_USER | EXISTING_USER
+type method_to_enter_chat =
+  | NEW_USER
+  | EXISTING_USER
 
 (* [client_st] is the initial state of the client. *)
 let client_st = ref (init_state ())
@@ -92,11 +95,7 @@ and check_username r w str next_step =
     print_endline "Nice username!";
     match next_step with
     | EXISTING_USER -> login_process r w str
-    | NEW_USER -> signup_process r w str
-
-and check_server r w = return ()
-
-and create_user res r w = return ()
+    | NEW_USER -> signup_process r w str)
 
 (* [read_login_or_signup r w] checks if the user wants to log in or sign
    up and recursively calls read_login_or_signup until the user has made
