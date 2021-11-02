@@ -34,7 +34,9 @@ let rec read r =
   | `Eof ->
       print_endline "Server error, please try again. \n";
       exit 0
-  | `Ok line -> return ()
+  | `Ok line ->
+      print_endline line;
+      read r
 
 (* [send_msg w] converts the standard input to server input by trimming
    white space and then recursively calls send_msg to send the inputs to
@@ -45,7 +47,9 @@ let rec send_msg w =
   | `Eof ->
       print_endline "Error reading stdin\n";
       return ()
-  | `Ok line -> return ()
+  | `Ok line ->
+      Writer.write_line w line;
+      send_msg w
 
 let read_write_loop r w =
   don't_wait_for (send_msg w);
