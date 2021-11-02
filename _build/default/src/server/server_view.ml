@@ -1,6 +1,7 @@
 open Async
 open Async_unix
 open ANSITerminal
+open Server
 
 let rec connection_handler addr r w =
   let () = print_endline "Client \n" in
