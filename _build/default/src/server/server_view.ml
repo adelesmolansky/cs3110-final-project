@@ -20,6 +20,7 @@ let rec connection_reader addr r w =
       print_endline "Error: reading from server\n";
       return ()
   | `Ok line -> (
+      print_endline ("Received" ^ line);
       let sys = int_of_string (String.sub line 0 4)
       and mess = String.sub line 5 (String.length line) in
       match sys with

@@ -20,21 +20,22 @@ let rec connection_reader addr r w =
       print_endline "Error: reading from server\n";
       return ()
   | `Ok line -> (
-      let sys = int_of_string (String.sub line 0 4)
-      and mess = String.sub line 5 (String.length line) in
+      print_endline ("Received: " ^ line);
+      let sys = int_of_string (String.sub line 0 5) in
+      let mess = String.sub line 5 (String.length line - 5) in
       match sys with
       (* Code 00001 is for checking a username*)
       | 00001 ->
-          if check_state mess = false then (
-            Writer.write w "false";
+          if check_state mess = true then (
+            Writer.write_line w "false";
             connection_reader addr r w)
           else (
-            Writer.write w "true";
+            Writer.write_line w "true";
             connection_reader addr r w)
       (* Code 00010 is for sign in*)
       | 00010 ->
-          if check_state mess = false then (
-            Writer.write w "true";
+          if check_state mess = true then (
+            Writer.write_line w "true";
             server :=
               {
                 !server with
@@ -42,7 +43,7 @@ let rec connection_reader addr r w =
               };
             connection_reader addr r w)
           else (
-            Writer.write w "false";
+            Writer.write_line w "false";
             connection_reader addr r w)
       | _ -> connection_reader addr r w)
 

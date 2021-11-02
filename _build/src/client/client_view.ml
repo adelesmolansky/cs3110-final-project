@@ -66,7 +66,7 @@ let read_write_loop r w =
   ()
 
 let login_process r w uname =
-  Writer.write w ("00001" ^ uname);
+  Writer.write_line w ("00001" ^ uname);
   Reader.read_line r >>= function
   | `Eof ->
       print_endline "Error: Server connection";
@@ -80,7 +80,7 @@ let login_process r w uname =
         return ())
 
 let signup_process r w uname =
-  Writer.write w ("00010" ^ uname);
+  Writer.write_line w ("00010" ^ uname);
   Reader.read_line r >>= function
   | `Eof ->
       print_endline "Error: Server connection";
