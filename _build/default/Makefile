@@ -7,10 +7,10 @@ utop:
 	OCAMLRUNPARAM=b dune utop src
 
 client:
-	ocamlbuild -use-ocamlfind src/client_view.byte && ./client_view.byte
+	ocamlbuild -use-ocamlfind src/client/client_view.byte && ./client_view.byte
 
 server: 
-	ocamlbuild -use-ocamlfind src/server_view.byte && ./server_view.byte
+	ocamlbuild -use-ocamlfind src/server/server_view.byte && ./server_view.byte
 
 test:
 	OCAMLRUNPARAM=b dune exec test/main.exe

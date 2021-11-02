@@ -43,7 +43,9 @@ let rec read r =
   | `Eof ->
       print_endline "Server error, please try again. \n";
       exit 0
-  | `Ok line -> return ()
+  | `Ok line ->
+      print_endline line;
+      read r
 
 (* [send_msg w] converts the standard input to server input by trimming
    white space and then recursively calls send_msg to send the inputs to
@@ -54,16 +56,42 @@ let rec send_msg w =
   | `Eof ->
       print_endline "Error reading stdin\n";
       return ()
-  | `Ok line -> return ()
+  | `Ok line ->
+      Writer.write w line;
+      send_msg w
 
 let read_write_loop r w =
   don't_wait_for (send_msg w);
   don't_wait_for (read r);
   ()
 
-let login_process r w uname = ""
+let login_process r w uname =
+  Writer.write w ("00001" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "true" then (
+        print_endline "Log In successful";
+        return ())
+      else (
+        print_endline "Sorry, that is not a user in our database";
+        return ())
 
-let signup_process r w uname = ""
+let signup_process r w uname =
+  Writer.write w ("00010" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "true" then (
+        print_endline "Sign Up successful";
+        return ())
+      else (
+        print_endline "Sorry, that is already a user in our database";
+        return ())
 
 (* [read_usern r w next_step] checks if the user has properly entered a
    username and recursively calls read_user until the username rules are

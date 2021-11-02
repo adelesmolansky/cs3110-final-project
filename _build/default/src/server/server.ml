@@ -1,7 +1,7 @@
 open Core
 open Async
 
-type uname_and_pwds = (string * string) list
+type uname_and_pwds = (string * string * Writer.t) list
 
 type server_state = {
   uname_and_pwds : uname_and_pwds;
@@ -40,10 +40,11 @@ let input_of_string str = { uid = -1; input = str }
 let string_of_output = function
   | { uid = _; output = o } -> o
 
-let insert_al k v lst = (k, v) :: lst
+let insert_al k v w lst = (k, v, w) :: lst
 
 let insert_l v lst = v :: lst
 
-let new_user_pwd uname pwd st = insert_al uname pwd st.uname_and_pwds
+let new_user_pwd uname pwd w st =
+  insert_al uname pwd w st.uname_and_pwds
 
 let new_user_in_room uname st = insert_l uname st.curr_users
