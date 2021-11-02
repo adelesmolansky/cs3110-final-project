@@ -13,6 +13,19 @@ let check_state str =
   in
   check_username x str
 
+let send_all_message writer str =
+  let x = !server.uname_and_pwds in
+  let rec send wr lst str =
+    match lst with
+    | [] -> return ()
+    | (u, p, w) :: h ->
+        if wr == w then send wr h str
+        else (
+          Writer.write_line w str;
+          send wr h str)
+  in
+  send writer x str
+
 let rec connection_reader addr r w =
   print_endline "Client has been added";
   Reader.read_line r >>= function
@@ -45,6 +58,7 @@ let rec connection_reader addr r w =
           else (
             Writer.write_line w "false";
             connection_reader addr r w)
+      | 00011 -> send_all_message w mess
       | _ -> connection_reader addr r w)
 
 let create_tcp port =
