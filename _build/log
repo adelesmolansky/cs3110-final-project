@@ -1,11 +1,11 @@
-# dune build check
+# dune build
 # OCAMLPARAM: unset
-# Workspace root:
-# /Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project
-$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/dune038ccb.output 2> /dev/null
-# Auto-detected concurrency: 16
+# Workspace root: "/Users/taylorstephens/OneDrive - Cornell University/CS
+# 3110/Final Project/cs3110-final-project"
+$ /usr/bin/getconf _NPROCESSORS_ONLN > /var/folders/gc/dvl7wpg156v5m4ggxv93_lm40000gn/T/dunee71b19.output 2> /dev/null
+# Auto-detected concurrency: 12
 # disable binary cache
-$ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/2n/tsrpx9ds7cz4chzllytj4z140000gn/T/duneb01eb4.output
+$ /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folders/gc/dvl7wpg156v5m4ggxv93_lm40000gn/T/dune3ad29a.output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -15,51 +15,51 @@ $ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folder
 #  ; fdo_target_exe = None
 #  ; build_dir = "default"
 #  ; toplevel_path =
-#      Some External "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/toplevel"
-#  ; ocaml_bin = External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin"
-#  ; ocaml = Ok External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocaml"
+#      Some External "/Users/taylorstephens/.opam/cs3110-2021fa/lib/toplevel"
+#  ; ocaml_bin = External "/Users/taylorstephens/.opam/cs3110-2021fa/bin"
+#  ; ocaml = Ok External "/Users/taylorstephens/.opam/cs3110-2021fa/bin/ocaml"
 #  ; ocamlc =
-#      External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt"
+#      External "/Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt"
 #  ; ocamlopt =
-#      Ok External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlopt.opt"
+#      Ok External "/Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlopt.opt"
 #  ; ocamldep =
-#      Ok External "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamldep.opt"
+#      Ok External "/Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt"
 #  ; ocamlmklib =
 #      Ok
 #        External
-#          "/Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlmklib.opt"
+#          "/Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlmklib.opt"
 #  ; env =
 #      map
 #        { "DUNE_OCAML_HARDCODED" :
-#            "/Users/adelesmolansky/.opam/cs3110-2021fa/lib"
+#            "/Users/taylorstephens/.opam/cs3110-2021fa/lib"
 #        ; "DUNE_OCAML_STDLIB" :
-#            "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/ocaml"
+#            "/Users/taylorstephens/.opam/cs3110-2021fa/lib/ocaml"
 #        ; "DUNE_SOURCEROOT" :
-#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project"
+#            "/Users/taylorstephens/OneDrive - Cornell University/CS 3110/Final Project/cs3110-final-project"
 #        ; "INSIDE_DUNE" :
-#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project/_build/default"
+#            "/Users/taylorstephens/OneDrive - Cornell University/CS 3110/Final Project/cs3110-final-project/_build/default"
 #        ; "MANPATH" :
-#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project/_build/install/default/bin"
+#            "/Users/taylorstephens/OneDrive - Cornell University/CS 3110/Final Project/cs3110-final-project/_build/install/default/bin"
 #        ; "OCAMLFIND_IGNORE_DUPS_IN" :
-#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project/_build/install/default/lib"
+#            "/Users/taylorstephens/OneDrive - Cornell University/CS 3110/Final Project/cs3110-final-project/_build/install/default/lib"
 #        ; "OCAMLPATH" :
-#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project/_build/install/default/lib"
+#            "/Users/taylorstephens/OneDrive - Cornell University/CS 3110/Final Project/cs3110-final-project/_build/install/default/lib"
 #        ; "OCAMLTOP_INCLUDE_PATH" :
-#            "/Users/adelesmolansky/Desktop/College/FALL2021/cs3110/cs3110-final-project/_build/install/default/lib/toplevel"
+#            "/Users/taylorstephens/OneDrive - Cornell University/CS 3110/Final Project/cs3110-final-project/_build/install/default/lib/toplevel"
 #        ; "OCAML_COLOR" : "always"
 #        ; "OPAMCOLOR" : "always"
 #        }
 #  ; findlib_path =
-#      [ External "/Users/adelesmolansky/.opam/cs3110-2021fa/lib" ]
+#      [ External "/Users/taylorstephens/.opam/cs3110-2021fa/lib" ]
 #  ; arch_sixtyfour = true
 #  ; natdynlink_supported = true
 #  ; supports_shared_libraries = true
 #  ; ocaml_config =
 #      { version = "4.12.0"
 #      ; standard_library_default =
-#          "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/ocaml"
+#          "/Users/taylorstephens/.opam/cs3110-2021fa/lib/ocaml"
 #      ; standard_library =
-#          "/Users/adelesmolansky/.opam/cs3110-2021fa/lib/ocaml"
+#          "/Users/taylorstephens/.opam/cs3110-2021fa/lib/ocaml"
 #      ; standard_runtime = "the_standard_runtime_variable_was_deleted"
 #      ; ccomp_type = "cc"
 #      ; c_compiler = "cc"
@@ -123,3 +123,11 @@ $ /Users/adelesmolansky/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /var/folder
 #      ; windows_unicode = false
 #      }
 #  }
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/authors.ml) > _build/default/src/.authors.eobjs/authors.ml.d
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/state.ml) > _build/default/src/.authors.eobjs/state.ml.d
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -intf src/authors.mli) > _build/default/src/.authors.eobjs/authors.mli.d
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -I src/.authors.eobjs/byte -no-alias-deps -opaque -o src/.authors.eobjs/byte/dune__exe.cmo -c -impl src/.authors.eobjs/dune__exe.ml-gen)
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlc.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -bin-annot -I src/.authors.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o src/.authors.eobjs/byte/dune__exe__Authors.cmi -c -intf src/authors.mli)
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -I src/.authors.eobjs/byte -I src/.authors.eobjs/native -intf-suffix .ml-gen -no-alias-deps -opaque -o src/.authors.eobjs/native/dune__exe.cmx -c -impl src/.authors.eobjs/dune__exe.ml-gen)
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -I src/.authors.eobjs/byte -I src/.authors.eobjs/native -intf-suffix .ml -no-alias-deps -opaque -open Dune__exe -o src/.authors.eobjs/native/dune__exe__Authors.cmx -c -impl src/authors.ml)
+$ (cd _build/default && /Users/taylorstephens/.opam/cs3110-2021fa/bin/ocamlopt.opt -w +a-4-6-7-9-27-29-30-32..42-44-45-48-50-60-66-67 -warn-error -a+31 -g -o src/authors.exe src/.authors.eobjs/native/dune__exe.cmx src/.authors.eobjs/native/dune__exe__Authors.cmx)
