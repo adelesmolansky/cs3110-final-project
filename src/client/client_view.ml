@@ -142,7 +142,7 @@ and password_process r w uname pass =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "true" then (
+      if line = "UNAME_EXISTS" then (
         print_endline "Log In successful";
         return ())
       else (

@@ -58,7 +58,7 @@ let rec connection_reader addr r w =
       match sys with
       (* Code 00001 is for log in *)
       | 00001 ->
-          if check_username mess = true then (
+          if check_username user_input = true then (
             Writer.write_line w "false";
             connection_reader addr r w)
           else (
@@ -66,7 +66,7 @@ let rec connection_reader addr r w =
             connection_reader addr r w)
       (* Code 00010 is for sign up *)
       | 00010 ->
-          if check_username mess = true then (
+          if check_username user_input = true then (
             Writer.write_line w "true";
             server :=
               {
@@ -80,12 +80,12 @@ let rec connection_reader addr r w =
             connection_reader addr r w)
       (* Code 00011 sends messages*)
       | 00011 ->
-          ignore (send_all_message w mess);
+          ignore (send_all_message w user_input);
           connection_reader addr r w
       (* Code 00100 checks to see if a username - password pair are
          correct*)
       | 00100 ->
-          let lst = String.split_on_char ':' mess in
+          let lst = String.split_on_char ':' user_input in
           let uname = List.nth lst 0 and pass = List.nth lst 1 in
           if check_password uname pass = true then (
             Writer.write_line w "true";
@@ -94,7 +94,7 @@ let rec connection_reader addr r w =
             Writer.write_line w "false";
             connection_reader addr r w)
       | 00101 ->
-          let lst = String.split_on_char ':' mess in
+          let lst = String.split_on_char ':' user_input in
           let uname = List.nth lst 0 and pass = List.nth lst 1 in
           server :=
             { !server with uname_and_pwds = change_pass uname pass w };
