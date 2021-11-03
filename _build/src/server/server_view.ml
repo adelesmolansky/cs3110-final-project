@@ -4,6 +4,17 @@ open ANSITerminal
 
 let server = ref (Server.init_server ())
 
+(* [look_up wr] returns the option of the username of the client
+   associated with the Writer.t wr*)
+let look_up wr =
+  let x = !server.uname_and_pwds in
+  let rec loop write lst =
+    match x with
+    | [] -> None
+    | (u, p, w) :: t -> if w == wr then Some u else loop wr t
+  in
+  loop wr x
+
 (* [new_user str] returns true if the username [str] does not exist in
    the current list of users and passwords, and false otherwise *)
 let check_username str =
@@ -41,7 +52,7 @@ let send_all_message writer str =
         print_endline p;
         if writer == w then send wr t str
         else (
-          Writer.write_line w (u ^ ": " ^ str);
+          Writer.write_line w str;
           send wr t str)
   in
   send writer x str
@@ -81,7 +92,12 @@ let rec connection_reader addr r w =
             connection_reader addr r w)
       (* Code 00011 sends messages*)
       | 00011 ->
-          ignore (send_all_message w user_input);
+          let u =
+            match look_up w with
+            | None -> ""
+            | Some v -> v
+          in
+          ignore (send_all_message w (u ^ ": " ^ user_input));
           connection_reader addr r w
       (* Code 00100 checks to see if a username - password pair are
          correct*)
@@ -94,6 +110,7 @@ let rec connection_reader addr r w =
           else (
             Writer.write_line w "false";
             connection_reader addr r w)
+      (* Code 00101 adds a password to the server state*)
       | 00101 ->
           let lst = String.split_on_char ':' user_input in
           let uname = List.nth lst 0 and pass = List.nth lst 1 in
