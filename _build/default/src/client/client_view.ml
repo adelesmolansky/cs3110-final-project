@@ -132,9 +132,7 @@ and login_process r w uname =
         print_endline "Please enter your password";
         read_password r w uname EXISTING_USER)
       else (
-        print_endline
-          "Sorry, this username does not exist. Please enter a valid \
-           username";
+        print_endline "Sorry, that is not a user in our database";
         read_usern r w EXISTING_USER)
 
 and password_process r w uname pass =
@@ -158,13 +156,11 @@ and signup_process r w uname =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "NEW_USER" then (
-        print_endline "Now enter a valid password to enter the chatroom";
+      if line = "true" then (
+        print_endline "Please enter a new password";
         read_password r w uname NEW_USER)
       else (
-        print_endline
-          "Sorry, this username already exists, please enter a \
-           different username";
+        print_endline "Sorry, that is already a user in our database";
         read_usern r w NEW_USER)
 
 and new_password_process r w uname pass =
