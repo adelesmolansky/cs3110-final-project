@@ -1,10 +1,10 @@
 # dune build
 # OCAMLPARAM: unset
 # Workspace root: /home/davidthuman/3110/final/cs3110-final-project
-$ /usr/bin/nproc > /tmp/dune6a5cdb.output 2> /dev/null
+$ /usr/bin/nproc > /tmp/dune4ed2a6.output 2> /dev/null
 # Auto-detected concurrency: 8
 # disable binary cache
-$ /home/davidthuman/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /tmp/dune7da7e8.output
+$ /home/davidthuman/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /tmp/dune65516e.output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -118,3 +118,4 @@ $ /home/davidthuman/.opam/cs3110-2021fa/bin/ocamlc.opt -config > /tmp/dune7da7e8
 #      }
 #  }
 $ (cd _build/default && /home/davidthuman/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/server/server_view.ml) > _build/default/src/server/.server.eobjs/server_view.ml.d
+$ (cd _build/default && /home/davidthuman/.opam/cs3110-2021fa/bin/ocamldep.opt -modules -impl src/client/client_view.ml) > _build/default/src/client/.client.eobjs/client_view.ml.d

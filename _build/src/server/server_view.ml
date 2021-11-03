@@ -4,14 +4,31 @@ open ANSITerminal
 
 let server = ref (Server.init_server ())
 
-let check_state str =
+let check_username str =
   let x = !server.uname_and_pwds in
-  let rec check_username lst str =
+  let rec check lst str =
     match lst with
     | [] -> true
-    | (u, p, w) :: h -> if u = str then false else check_username h str
+    | (u, p, w) :: h -> if u = str then false else check h str
   in
-  check_username x str
+  check x str
+
+let check_password uname pass =
+  let x = !server.uname_and_pwds in
+  let rec check lst un pa =
+    match lst with
+    | [] -> false
+    | (u, p, w) :: h -> if u = un && p = pa then true else check h un pa
+  in
+  check x uname pass
+
+let change_pass uname pass w =
+  let x = !server.uname_and_pwds
+  and check tri =
+    match tri with
+    | u1, _, _ -> u1 != uname
+  in
+  (uname, pass, w) :: List.filter check x
 
 let send_all_message writer str =
   let x = !server.uname_and_pwds in
@@ -27,7 +44,7 @@ let send_all_message writer str =
   send writer x str
 
 let rec connection_reader addr r w =
-  print_endline "Client has been added";
+  print_endline "Ready to read";
   Reader.read_line r >>= function
   | `Eof ->
       print_endline "Error: reading from server\n";
@@ -39,7 +56,7 @@ let rec connection_reader addr r w =
       match sys with
       (* Code 00001 is for checking a username*)
       | 00001 ->
-          if check_state mess = true then (
+          if check_username mess = true then (
             Writer.write_line w "false";
             connection_reader addr r w)
           else (
@@ -47,7 +64,7 @@ let rec connection_reader addr r w =
             connection_reader addr r w)
       (* Code 00010 is for sign in*)
       | 00010 ->
-          if check_state mess = true then (
+          if check_username mess = true then (
             Writer.write_line w "true";
             server :=
               {
@@ -58,7 +75,28 @@ let rec connection_reader addr r w =
           else (
             Writer.write_line w "false";
             connection_reader addr r w)
-      | 00011 -> send_all_message w mess
+      (* Code 00011 sends messages*)
+      | 00011 ->
+          ignore (send_all_message w mess);
+          connection_reader addr r w
+      (* Code 00100 checks to see if a username - password pair are
+         correct*)
+      | 00100 ->
+          let lst = String.split_on_char ':' mess in
+          let uname = List.nth lst 0 and pass = List.nth lst 1 in
+          if check_password uname pass = true then (
+            Writer.write_line w "true";
+            connection_reader addr r w)
+          else (
+            Writer.write_line w "false";
+            connection_reader addr r w)
+      | 00101 ->
+          let lst = String.split_on_char ':' mess in
+          let uname = List.nth lst 0 and pass = List.nth lst 1 in
+          server :=
+            { !server with uname_and_pwds = change_pass uname pass w };
+          Writer.write_line w "true";
+          connection_reader addr r w
       | _ -> connection_reader addr r w)
 
 let create_tcp port =
