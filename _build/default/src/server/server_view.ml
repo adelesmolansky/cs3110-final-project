@@ -37,11 +37,11 @@ let send_all_message writer str =
   let rec send wr lst str =
     match lst with
     | [] -> return ()
-    | (u, p, w) :: h ->
-        if wr == w then send wr h str
+    | (u, p, w) :: t ->
+        if writer == w then send wr t str
         else (
-          Writer.write_line w str;
-          send wr h str)
+          Writer.write_line w u;
+          send wr t str)
   in
   send writer x str
 

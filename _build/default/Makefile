@@ -1,6 +1,8 @@
 .PHONY: test check
 
 build:
+	ocamlbuild -use-ocamlfind src/server/server_view.byte
+	ocamlbuild -use-ocamlfind src/client/client_view.byte
 	dune build
 
 utop:

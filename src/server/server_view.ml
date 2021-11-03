@@ -24,24 +24,25 @@ let check_password uname pass =
   in
   check x uname pass
 
-let change_pass uname pass w =
+let change_pass uname pass wr =
   let x = !server.uname_and_pwds
   and check tri =
     match tri with
-    | u1, _, _ -> u1 != uname
+    | u1, _, w -> wr != w
   in
-  (uname, pass, w) :: List.filter check x
+  (uname, pass, wr) :: List.filter check x
 
 let send_all_message writer str =
   let x = !server.uname_and_pwds in
   let rec send wr lst str =
     match lst with
     | [] -> return ()
-    | (u, p, w) :: h ->
-        if wr == w then send wr h str
+    | (u, p, w) :: t ->
+        print_endline p;
+        if writer == w then send wr t str
         else (
           Writer.write_line w str;
-          send wr h str)
+          send wr t str)
   in
   send writer x str
 
