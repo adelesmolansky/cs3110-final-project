@@ -65,34 +65,6 @@ let read_write_loop r w =
   don't_wait_for (send_msg w);
   ()
 
-let login_process r w uname =
-  Writer.write_line w ("00001" ^ uname);
-  Reader.read_line r >>= function
-  | `Eof ->
-      print_endline "Error: Server connection";
-      return ()
-  | `Ok line ->
-      if line = "true" then (
-        print_endline "Log In successful";
-        return ())
-      else (
-        print_endline "Sorry, that is not a user in our database";
-        return ())
-
-let signup_process r w uname =
-  Writer.write_line w ("00010" ^ uname);
-  Reader.read_line r >>= function
-  | `Eof ->
-      print_endline "Error: Server connection";
-      return ()
-  | `Ok line ->
-      if line = "true" then (
-        print_endline "Sign Up successful";
-        return ())
-      else (
-        print_endline "Sorry, that is already a user in our database";
-        return ())
-
 (* [read_usern r w next_step] checks if the user has properly entered a
    username and recursively calls read_user until the username rules are
    met. *)
@@ -118,11 +90,96 @@ and check_username r w str next_step =
     print_endline
       "Error: username must contain at least four characters!";
     read_usern r w next_step)
-  else (
-    print_endline "Nice username!";
+  else
     match next_step with
     | EXISTING_USER -> login_process r w str
-    | NEW_USER -> signup_process r w str)
+    | NEW_USER -> signup_process r w str
+
+and read_password r w uname next_step =
+  let input = Lazy.force Reader.stdin in
+  Reader.read_line input >>= function
+  | `Eof ->
+      print_endline "Error: cannot read input";
+      read_usern r w next_step
+  | `Ok line -> check_password r w uname line next_step
+
+and check_password r w uname pass next_step =
+  let t1 =
+    match String.index_opt pass ' ' with
+    | Some _ -> true
+    | None -> false
+  in
+  if t1 then (
+    print_endline "Error: password must contain no blank spaces!";
+    read_usern r w next_step)
+  else if String.length pass < 4 then (
+    print_endline
+      "Error: password must contain at least four characters!";
+    read_usern r w next_step)
+  else
+    match next_step with
+    | EXISTING_USER -> password_process r w uname pass
+    | NEW_USER -> new_password_process r w uname pass
+
+and login_process r w uname =
+  Writer.write_line w ("00001" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "UNAME_EXISTS" then (
+        print_endline "Please enter your password";
+        read_password r w uname EXISTING_USER)
+      else (
+        print_endline
+          "Sorry, this username does not exist. Please enter a valid \
+           username";
+        read_usern r w EXISTING_USER)
+
+and password_process r w uname pass =
+  Writer.write_line w ("00100" ^ uname ^ ":" ^ pass);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "true" then (
+        print_endline "Log In successful";
+        return ())
+      else (
+        print_endline "Sorry, that is not the correct password";
+        read_usern r w EXISTING_USER)
+
+and signup_process r w uname =
+  Writer.write_line w ("00010" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "NEW_USER" then (
+        print_endline "Now enter a valid password to enter the chatroom";
+        read_password r w uname NEW_USER)
+      else (
+        print_endline
+          "Sorry, this username already exists, please enter a \
+           different username";
+        read_usern r w NEW_USER)
+
+and new_password_process r w uname pass =
+  Writer.write_line w ("00101" ^ uname ^ ":" ^ pass);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "true" then (
+        print_endline "Sign Up successful";
+        return ())
+      else (
+        print_endline "Sorry";
+        read_usern r w NEW_USER)
 
 (* [read_login_or_signup r w] checks if the user wants to log in or sign
    up and recursively calls read_login_or_signup until the user has made

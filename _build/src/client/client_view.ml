@@ -177,6 +177,38 @@ and new_password_process r w uname pass =
         print_endline "Sorry";
         read_usern r w NEW_USER)
 
+and login_process r w uname =
+  Writer.write_line w ("00001" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "UNAME_EXISTS" then (
+        print_endline "Log In successful";
+        return ())
+      else (
+        print_endline
+          "Sorry, this username does not exist. Please enter a valid \
+           username";
+        read_usern r w EXISTING_USER)
+
+and signup_process r w uname =
+  Writer.write_line w ("00010" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "NEW_USER" then (
+        print_endline "Now enter a valid password to enter the chatroom";
+        return ())
+      else (
+        print_endline
+          "Sorry, this username already exists, please enter a \
+           different username";
+        read_usern r w NEW_USER)
+
 (* [read_login_or_signup r w] checks if the user wants to log in or sign
    up and recursively calls read_login_or_signup until the user has made
    a proper decision. *)
