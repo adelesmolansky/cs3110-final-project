@@ -65,34 +65,6 @@ let read_write_loop r w =
   don't_wait_for (read r);
   ()
 
-let login_process r w uname =
-  Writer.write_line w ("00001" ^ uname);
-  Reader.read_line r >>= function
-  | `Eof ->
-      print_endline "Error: Server connection";
-      return ()
-  | `Ok line ->
-      if line = "true" then (
-        print_endline "Log In successful";
-        return ())
-      else (
-        print_endline "Sorry, that is not a user in our database";
-        return ())
-
-let signup_process r w uname =
-  Writer.write_line w ("00010" ^ uname);
-  Reader.read_line r >>= function
-  | `Eof ->
-      print_endline "Error: Server connection";
-      return ()
-  | `Ok line ->
-      if line = "true" then (
-        print_endline "Sign Up successful";
-        return ())
-      else (
-        print_endline "Sorry, that is already a user in our database";
-        return ())
-
 (* [read_usern r w next_step] checks if the user has properly entered a
    username and recursively calls read_user until the username rules are
    met. *)
@@ -123,6 +95,38 @@ and check_username r w str next_step =
     match next_step with
     | EXISTING_USER -> login_process r w str
     | NEW_USER -> signup_process r w str)
+
+and login_process r w uname =
+  Writer.write_line w ("00001" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "UNAME_EXISTS" then (
+        print_endline "Log In successful";
+        return ())
+      else (
+        print_endline
+          "Sorry, this username does not exist. Please enter a valid \
+           username";
+        read_usern r w EXISTING_USER)
+
+and signup_process r w uname =
+  Writer.write_line w ("00010" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "NEW_USER" then (
+        print_endline "Now enter a valid password to enter the chatroom";
+        return ())
+      else (
+        print_endline
+          "Sorry, this username already exists, please enter a \
+           different username";
+        read_usern r w NEW_USER)
 
 (* [read_login_or_signup r w] checks if the user wants to log in or sign
    up and recursively calls read_login_or_signup until the user has made

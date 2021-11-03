@@ -4,7 +4,9 @@ open ANSITerminal
 
 let server = ref (Server.init_server ())
 
-let check_state str =
+(* [new_user str] returns true if the username [str] does not exist in
+   the current list of users and passwords, and false otherwise *)
+let new_user str =
   let x = !server.uname_and_pwds in
   let rec check_username lst str =
     match lst with
@@ -35,30 +37,31 @@ let rec connection_reader addr r w =
   | `Ok line -> (
       print_endline ("Received: " ^ line);
       let sys = int_of_string (String.sub line 0 5) in
-      let mess = String.sub line 5 (String.length line - 5) in
+      let user_input = String.sub line 5 (String.length line - 5) in
       match sys with
-      (* Code 00001 is for checking a username*)
+      (* Code 00001 is for log in *)
       | 00001 ->
-          if check_state mess = true then (
-            Writer.write_line w "false";
+          if new_user user_input = true then (
+            Writer.write_line w "INVALID_UNAME";
             connection_reader addr r w)
           else (
-            Writer.write_line w "true";
+            Writer.write_line w "UNAME_EXISTS";
             connection_reader addr r w)
-      (* Code 00010 is for sign in*)
+      (* Code 00010 is for sign up *)
       | 00010 ->
-          if check_state mess = true then (
-            Writer.write_line w "true";
+          if new_user user_input = true then (
+            Writer.write_line w "NEW_USER";
             server :=
               {
                 !server with
-                uname_and_pwds = Server.new_user_pwd mess "" w !server;
+                uname_and_pwds =
+                  Server.new_user_pwd user_input "" w !server;
               };
             connection_reader addr r w)
           else (
-            Writer.write_line w "false";
+            Writer.write_line w "UNAME_EXISTS";
             connection_reader addr r w)
-      | 00011 -> send_all_message w mess
+      | 00011 -> send_all_message w user_input
       | _ -> connection_reader addr r w)
 
 let create_tcp port =
