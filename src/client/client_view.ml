@@ -128,7 +128,7 @@ and login_process r w uname =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "true" then (
+      if line = "UNAME_EXISTS" then (
         print_endline "Please enter your password";
         read_password r w uname EXISTING_USER)
       else (
@@ -142,7 +142,7 @@ and password_process r w uname pass =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "UNAME_EXISTS" then (
+      if line = "true" then (
         print_endline "Log In successful";
         return ())
       else (
