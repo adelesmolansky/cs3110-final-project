@@ -12,8 +12,15 @@ type method_to_enter_chat =
   | NEW_USER
   | EXISTING_USER
 
+type acronym_commands =
+  | ADD_ACRONYM
+  | ADD_PHRASE
+  | VIEW_ALL
+  | DELETE
+
 (* [client_st] is the initial state of the client. *)
-let client_st = ref (init_state ())
+let client_st = ref (Client.init_state ())
+
 
 let welcome_messages = function
   | INIT ->
@@ -35,6 +42,19 @@ let welcome_messages = function
       print_endline
         "Welcome to Camel Chat. You can now send messages to your \
          friends. ADD MORE DETAILS HERE!"
+
+let acronym_messages = function
+  | ADD_ACRONYM ->
+      print_endline "Please type the acronym that you want to create"
+  | ADD_PHRASE ->
+      print_endline
+        "Please type the corresponding phrase for the acronym that you \
+         just entered"
+  | VIEW_ALL ->
+      print_endline "Here are a list of all your saved acronyms"
+  | DELETE ->
+      print_endline
+        "Please enter the acronym that you would like to delete"
 
 (* [read r] keeps reading the pipe [r] from the server until the server
    is successfully connected *)
@@ -188,14 +208,14 @@ let rec read_login_or_signup r w =
       read_login_or_signup r w
   | `Ok line -> read_input r w line
 
-and read_input r w str =
-  if str = "Log In" then (
+and read_input r w str = match str with 
+  | "Log In" -> (
     welcome_messages LOG_IN;
     read_usern r w EXISTING_USER)
-  else if str = "Sign Up" then (
+  | "Sign Up" -> (
     welcome_messages SIGN_UP;
     read_usern r w NEW_USER)
-  else (
+  | _ -> (
     print_endline "Please enter a valid command";
     read_login_or_signup r w)
 
@@ -204,6 +224,60 @@ let login_signup _ r w =
   welcome_messages ENTER_CHAT;
   read_write_loop r w;
   Deferred.never ()
+
+let rec is_acronym (str : string) (acronyms_list : (string * string) list) = match acronyms_list with 
+    | [] -> false
+    | (a, _ ) :: t -> if a = str then true else is_acronym str t
+
+let rec read_acronym str st = 
+  let input = Lazy.force Reader.stdin in
+  Reader.read_line input >>= function
+  | `Eof ->
+      print_endline "Error reading stdin\n";
+      read_acronym str st
+  | `Ok line -> check_new_acronym line st r w
+
+and check_new_acronym str st r w =
+  let has_blanks =
+    match String.index_opt str ' ' with
+    | Some _ -> true
+    | None -> false
+  in
+  if has_blanks then (
+    print_endline "Error: acronym must contain no blank spaces!"; read_acronym str st 
+  )
+else 
+  if ( is_acronym str st.acronyms) 
+    then (print_endline "this acronym already exists. Please enter a new acronym"; 
+    read_acronym str st ) 
+  else (acronym_messages ADD_PHRASE; read_phrase acronym st r w)
+
+and read_phrase acronym st r w = 
+  let input = Lazy.force Reader.stdin in
+  Reader.read_line input >>= function
+  | `Eof ->
+      print_endline "Error: cannot read input";
+      read_phrase acronym st r w
+  | `Ok line -> add_phrase acronym line st r w
+
+and add_phrase acronym phrase st r w = 
+  client_st := { !client_st with acronyms = !client_st.acronyms acronym phrase };
+
+(* WE NEED TO ADD SMTH TO SERVER_VIEW TO USE THIS FUCTION *)
+(* [interact_acronyms r w str st] matches the [str] that the user
+   entered to check how the user wants to interact with acronyms and
+   instructs the user accordingly *)
+let interact_acronyms r w str st =
+  match str with
+  | "#add" ->
+      acronym_messages ADD_ACRONYM;
+      read_acronym str st
+  | "#view" -> acronym_messages VIEW_ALL; read_write_loop r w; Deferred.never ()
+  | "#delete" -> acronym_messages DELETE; read_write_loop r w; Deferred.never ()
+  | _ ->
+      print_endline
+        "Please enter a valid command to add, view, and delete an \
+         acronym"; read_write_loop r w;
 
 let tcp host port =
   let addr =

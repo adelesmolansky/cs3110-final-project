@@ -4,6 +4,17 @@ open ANSITerminal
 
 let server = ref (Server.init_server ())
 
+(* [look_up wr] returns the option of the username of the client
+   associated with the Writer.t wr*)
+let look_up wr =
+  let x = !server.uname_and_pwds in
+  let rec loop write lst =
+    match x with
+    | [] -> None
+    | (u, p, w) :: t -> if w == wr then Some u else loop wr t
+  in
+  loop wr x
+
 (* [new_user str] returns true if the username [str] does not exist in
    the current list of users and passwords, and false otherwise *)
 let check_username str =
@@ -15,6 +26,8 @@ let check_username str =
   in
   check x str
 
+(* [check_password uname pass] returns true if the given
+   username-password pair at in the server state, and false otherwise.*)
 let check_password uname pass =
   let x = !server.uname_and_pwds in
   let rec check lst un pa =
@@ -24,27 +37,39 @@ let check_password uname pass =
   in
   check x uname pass
 
-let change_pass uname pass w =
+(* [change_pass uname pass wr] changes the password of the client
+   associated with Writer.t wr.*)
+let change_pass uname pass wr =
   let x = !server.uname_and_pwds
   and check tri =
     match tri with
-    | u1, _, _ -> u1 != uname
+    | u1, _, w -> wr != w
   in
-  (uname, pass, w) :: List.filter check x
+  (uname, pass, wr) :: List.filter check x
 
+(* [send_all_message writer str] loops through all the clients in the
+   server state, throwing out the client with the Writer.t writer.
+   During this loop, this function writes to each client the string
+   str.*)
 let send_all_message writer str =
   let x = !server.uname_and_pwds in
   let rec send wr lst str =
     match lst with
     | [] -> return ()
     | (u, p, w) :: t ->
+        print_endline p;
         if writer == w then send wr t str
         else (
-          Writer.write_line w u;
+          Writer.write_line w str;
           send wr t str)
   in
   send writer x str
 
+(* [connection_reader addr r w] is a resursive function that completes
+   async actions. This function is constantly waiting for a client to
+   write to its Reader.t. Once something is written, connection_reader
+   reads the string, parses it for a 5 bit code, does that code's
+   asccociated action, and then calls itself with the same arguments.*)
 let rec connection_reader addr r w =
   print_endline "Ready to read";
   Reader.read_line r >>= function
@@ -80,7 +105,12 @@ let rec connection_reader addr r w =
             connection_reader addr r w)
       (* Code 00011 sends messages*)
       | 00011 ->
-          ignore (send_all_message w user_input);
+          let u =
+            match look_up w with
+            | None -> ""
+            | Some v -> v
+          in
+          ignore (send_all_message w (u ^ ": " ^ user_input));
           connection_reader addr r w
       (* Code 00100 checks to see if a username - password pair are
          correct*)
@@ -93,6 +123,7 @@ let rec connection_reader addr r w =
           else (
             Writer.write_line w "false";
             connection_reader addr r w)
+      (* Code 00101 adds a password to the server state*)
       | 00101 ->
           let lst = String.split_on_char ':' user_input in
           let uname = List.nth lst 0 and pass = List.nth lst 1 in
