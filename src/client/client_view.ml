@@ -12,8 +12,14 @@ type method_to_enter_chat =
   | NEW_USER
   | EXISTING_USER
 
+type acronym_commands =
+  | ADD_ACRONYM
+  | ADD_PHRASE
+  | VIEW_ALL
+  | DELETE
+
 (* [client_st] is the initial state of the client. *)
-let client_st = ref (init_state ())
+let client_st = ref (Client.init_state ())
 
 let welcome_messages = function
   | INIT ->
@@ -35,6 +41,19 @@ let welcome_messages = function
       print_endline
         "Welcome to Camel Chat. You can now send messages to your \
          friends. ADD MORE DETAILS HERE!"
+
+let acronym_messages = function
+  | ADD_ACRONYM ->
+      print_endline "Please type the acronym that you want to create"
+  | ADD_PHRASE ->
+      print_endline
+        "Please type the corresponding phrase for the acronym that you \
+         just entered"
+  | VIEW_ALL ->
+      print_endline "Here are a list of all your saved acronyms"
+  | DELETE ->
+      print_endline
+        "Please enter the acronym that you would like to delete"
 
 (* [read r] keeps reading the pipe [r] from the server until the server
    is successfully connected *)
@@ -128,10 +147,11 @@ and login_process r w uname =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "UNAME_EXISTS" then (
+      if line = "USER_EXISTS" then (
         print_endline "Please enter your password";
         read_password r w uname EXISTING_USER)
       else (
+        (* NOT_A_USER *)
         print_endline "Sorry, that is not a user in our database";
         read_usern r w EXISTING_USER)
 
@@ -156,10 +176,11 @@ and signup_process r w uname =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "true" then (
+      if line = "CREATE_NEW_USER" then (
         print_endline "Please enter a new password";
         read_password r w uname NEW_USER)
       else (
+        (* NEED_UNIQUE_UNAME *)
         print_endline "Sorry, that is already a user in our database";
         read_usern r w NEW_USER)
 
@@ -174,7 +195,8 @@ and new_password_process r w uname pass =
         print_endline "Sign Up successful";
         return ())
       else (
-        print_endline "Sorry";
+        print_endline
+          "Sorry, that is not a valid password. Please try again";
         read_usern r w NEW_USER)
 
 (* [read_login_or_signup r w] checks if the user wants to log in or sign
@@ -186,24 +208,90 @@ let rec read_login_or_signup r w =
   | `Eof ->
       print_endline "Error reading stdin\n";
       read_login_or_signup r w
-  | `Ok line -> read_input r w line
+  | `Ok line -> read_login_signup_input r w line
 
-and read_input r w str =
-  if str = "Log In" then (
-    welcome_messages LOG_IN;
-    read_usern r w EXISTING_USER)
-  else if str = "Sign Up" then (
-    welcome_messages SIGN_UP;
-    read_usern r w NEW_USER)
-  else (
-    print_endline "Please enter a valid command";
-    read_login_or_signup r w)
+and read_login_signup_input r w str =
+  match str with
+  | "Log In" ->
+      welcome_messages LOG_IN;
+      read_usern r w EXISTING_USER
+  | "Sign Up" ->
+      welcome_messages SIGN_UP;
+      read_usern r w NEW_USER
+  | _ ->
+      print_endline "Please enter a valid command";
+      read_login_or_signup r w
 
+(* [login_signup r w] initializes the login and sign up process for a
+   client. A client will login or signup and then enter the general chat
+   room *)
 let login_signup _ r w =
   read_login_or_signup r w >>= fun () ->
   welcome_messages ENTER_CHAT;
   read_write_loop r w;
   Deferred.never ()
+
+(* let rec is_acronym (str : string) (acronyms_list : (string * string)
+   list) = match acronyms_list with | [] -> false | (a, _ ) :: t -> if a
+   = str then true else is_acronym str t *)
+
+(* [read_new_acronym r w] gets calls when a user has entered a new
+   acronym that they want to add to their collection *)
+let rec read_new_acronym r w =
+  let input = Lazy.force Reader.stdin in
+  Reader.read_line input >>= function
+  | `Eof ->
+      print_endline "Error reading stdin\n";
+      read_new_acronym r w
+  | `Ok line -> check_new_acronym r w line
+
+and check_new_acronym r w str =
+  Writer.write_line w ("00110" ^ str);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "NEW_ACRONYM" then
+        let has_blanks =
+          match String.index_opt str ' ' with
+          | Some _ -> true
+          | None -> false
+        in
+        if has_blanks then (
+          print_endline "Error: acronym must contain no blank spaces!";
+          read_new_acronym r w)
+        else (
+          print_endline
+            "Please enter the corresponding phrase for your new acronym";
+          acronym_process r w line)
+      else (
+        (* NOT_A_USER *)
+        print_endline
+          "You have already created that acronym. Please enter a new \
+           acronym that you would like to create";
+        read_new_acronym r w)
+
+(* ADELE - TODO! *)
+and acronym_process r w acronym = read_new_acronym r w
+
+(* [acronym_add_handler r w] instructs the user on what to do next if a
+   user just entered the #add command *)
+let acronym_add_handler r w =
+  acronym_messages ADD_ACRONYM;
+  read_new_acronym r w
+
+(* [main_acronym_handler server_msg r w] reads a message from the server
+   after a user entered a command to interact with the acronyms and
+   matches the [server_msg] to the next step *)
+let main_acronym_handler server_msg r w =
+  match server_msg with
+  | "CREATE_NEW_ACRONYM" -> acronym_add_handler r w
+  | "SEND_ALL" -> acronym_view_handler r w
+  | "DELETE_ACRONYM" -> acronym_delete_handler r w
+  | _ ->
+      print_endline "Error";
+      return ()
 
 let tcp host port =
   let addr =

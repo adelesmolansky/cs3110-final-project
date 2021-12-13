@@ -1,0 +1,9 @@
+# Ignored folders
+
+_build/
+check/
+
+# Ignored files
+
+client_view.byte
+server_view.byte
