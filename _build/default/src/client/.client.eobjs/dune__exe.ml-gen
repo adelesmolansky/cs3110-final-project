@@ -1,6 +1,0 @@
-(** @canonical Dune__exe.Client *)
-module Client = Dune__exe__Client
-
-
-(** @canonical Dune__exe.Client_view *)
-module Client_view = Dune__exe__Client_view

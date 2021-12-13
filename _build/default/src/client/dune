@@ -1,3 +1,0 @@
-(executable
- (name client)
- (libraries async core ANSITerminal))
