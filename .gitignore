@@ -11,5 +11,5 @@ check.sh
 
 # Ignore folders
 
-/_build/
-/check/
+_build/
+check/
