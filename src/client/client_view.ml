@@ -18,8 +18,8 @@ type acronym_commands =
   | VIEW_ALL
   | DELETE
 
-(* [client_st] is the initial state of the client. *)
-let client_st = ref (Client.init_state ())
+(* [client] is the initial state of the client. *)
+let client = ref (Client.init_state ())
 
 let welcome_messages = function
   | INIT ->
@@ -192,6 +192,7 @@ and new_password_process r w uname pass =
       return ()
   | `Ok line ->
       if line = "true" then (
+        client := { uname; pwd = pass; is_in_chat = true };
         print_endline "Sign Up successful";
         return ())
       else (
@@ -246,7 +247,7 @@ let rec read_new_acronym r w =
   | `Ok line -> check_new_acronym r w line
 
 and check_new_acronym r w str =
-  Writer.write_line w ("00110" ^ str);
+  Writer.write_line w ("00110" ^ !client.uname ^ ":" ^ str);
   Reader.read_line r >>= function
   | `Eof ->
       print_endline "Error: Server connection";
@@ -281,13 +282,31 @@ let acronym_add_handler r w =
   acronym_messages ADD_ACRONYM;
   read_new_acronym r w
 
+(* [acronym_view_handler r w] connects to the server to get the clients
+   list of acronyms and then outputs it to the client *)
+let rec acronym_view_handler r w =
+  Writer.write_line w ("00001" ^ !client.uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      print_endline "TODO: SEND ACRONYM LIST";
+      return ()
+
+let acronym_delete_handler r w =
+  acronym_messages DELETE;
+  return ()
+
 (* [main_acronym_handler server_msg r w] reads a message from the server
    after a user entered a command to interact with the acronyms and
    matches the [server_msg] to the next step *)
 let main_acronym_handler server_msg r w =
   match server_msg with
   | "CREATE_NEW_ACRONYM" -> acronym_add_handler r w
-  | "SEND_ALL" -> acronym_view_handler r w
+  | "SEND_ALL" ->
+      acronym_messages VIEW_ALL;
+      acronym_view_handler r w
   | "DELETE_ACRONYM" -> acronym_delete_handler r w
   | _ ->
       print_endline "Error";

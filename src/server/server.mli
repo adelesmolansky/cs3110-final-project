@@ -1,16 +1,24 @@
 open Core
 open Async
 
-(* [uname_and_pwds] is the list of usernames and passwords *)
-type uname_and_pwds = (string * string * Writer.t) list
+(* [username] is the type of the username of each user in the
+   chatroom *)
+type username = string
 
-type acronyms = string Map.Make(String).t
+(* [uname_and_pwds] is the list of usernames and passwords *)
+type uname_and_pwds = (username * string * Writer.t) list
+
+(* TODO *)
+type acronyms = (string * string) list
+
+(* TODO *)
+type acronyms_map = (username * acronyms) list
 
 (* [server_state] is the current state of the server *)
 type server_state = {
   uname_and_pwds : uname_and_pwds;
   curr_users : string list;
-  acronyms : acronyms;
+  acronyms : acronyms_map;
 }
 
 (* [output] is the output from the server to the user with [uid] *)

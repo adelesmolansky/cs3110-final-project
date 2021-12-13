@@ -1,7 +1,8 @@
 open Async
 open Async_unix
 open ANSITerminal
-module Acronyms = Map.Make (String)
+
+type acronyms = (string * string) list
 
 let server = ref (Server.init_server ())
 
@@ -72,17 +73,22 @@ let check_password uname pass =
   in
   check x uname pass
 
-let rec check_new_acroynm_h acr acr_list =
+let rec find_acr_list uname map =
+  match map with
+  | [] -> failwith "User does not exist"
+  | (x, lst) :: xs -> if x = uname then lst else find_acr_list uname xs
+
+let rec check_new_acroynm_h (acr : string) (acr_list : acronyms) =
   match acr_list with
   | [] -> false
   | (acr', _) :: t ->
       if acr = acr' then true else check_new_acroynm_h acr t
 
-(* [check_new_acroynm str] returns true if the given acronym is in the
-   server state for the given user and false otherwise.*)
-let rec check_new_acroynm uname str =
+(* [check_new_acroynm uname str] returns true if the given acronym is in
+   the server state for the given user and false otherwise.*)
+let check_new_acroynm uname str =
   let x = !server.acronyms in
-  check_new_acroynm_h str (Acronyms.find uname x)
+  check_new_acroynm_h str (find_acr_list uname x)
 
 (* [change_pass uname pass wr] changes the password of the client
    associated with Writer.t wr.*)
@@ -173,7 +179,9 @@ let rec connection_reader addr r w =
           connection_reader addr r w
       (* Code 00110 is to add a new acronym *)
       | 00110 ->
-          if check_new_acroynm user_input = true then (
+          let pair = String.split_on_char ':' user_input in
+          let uname = List.nth pair 0 and acr = List.nth pair 1 in
+          if check_new_acroynm uname acr = true then (
             Writer.write_line w (send_to_writer ACRONYM_ADD);
             connection_reader addr r w)
           else (

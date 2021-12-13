@@ -2,7 +2,7 @@
 
     @author Adele Smolansky (as2953)
     @author David Thuman (dmt93)
-    @author Taylor Stephens (tms279)
+    @author Taylor Stephens (tms279) *)
 
 (************************************************************
 

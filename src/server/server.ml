@@ -1,12 +1,13 @@
 open Core
 open Async
-module Acronyms = Map.Make (String)
 
-type uname_and_pwds = (string * string * Writer.t) list
+type username = string
+
+type uname_and_pwds = (username * string * Writer.t) list
 
 type acronyms = (string * string) list
 
-type acronyms_map = acronyms Acronyms.t
+type acronyms_map = (username * acronyms) list
 
 type server_state = {
   uname_and_pwds : uname_and_pwds;
@@ -33,7 +34,7 @@ type current_state = {
 }
 
 let init_server () =
-  { uname_and_pwds = []; curr_users = []; acronyms = Acronyms.empty }
+  { uname_and_pwds = []; curr_users = []; acronyms = [] }
 
 let init_state () =
   {
