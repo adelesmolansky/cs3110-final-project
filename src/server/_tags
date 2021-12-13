@@ -1,0 +1,2 @@
+true: package(core),package(async),package(str),package(ANSITerminal)
+true: thread

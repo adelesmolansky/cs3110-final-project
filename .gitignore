@@ -1,0 +1,15 @@
+# Ignore files
+
+client_view.byte
+server_view.byte
+exclude.lst
+dune-workspace
+dune-project
+dune
+check.sh
+.ocamlformat
+
+# Ignore folders
+
+/_build/
+/check/
