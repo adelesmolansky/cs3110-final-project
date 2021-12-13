@@ -26,6 +26,8 @@ let check_username str =
   in
   check x str
 
+(* [check_password uname pass] returns true if the given
+   username-password pair at in the server state, and false otherwise.*)
 let check_password uname pass =
   let x = !server.uname_and_pwds in
   let rec check lst un pa =
@@ -35,6 +37,8 @@ let check_password uname pass =
   in
   check x uname pass
 
+(* [change_pass uname pass wr] changes the password of the client
+   associated with Writer.t wr.*)
 let change_pass uname pass wr =
   let x = !server.uname_and_pwds
   and check tri =
@@ -43,6 +47,10 @@ let change_pass uname pass wr =
   in
   (uname, pass, wr) :: List.filter check x
 
+(* [send_all_message writer str] loops through all the clients in the
+   server state, throwing out the client with the Writer.t writer.
+   During this loop, this function writes to each client the string
+   str.*)
 let send_all_message writer str =
   let x = !server.uname_and_pwds in
   let rec send wr lst str =
@@ -57,6 +65,11 @@ let send_all_message writer str =
   in
   send writer x str
 
+(* [connection_reader addr r w] is a resursive function that completes
+   async actions. This function is constantly waiting for a client to
+   write to its Reader.t. Once something is written, connection_reader
+   reads the string, parses it for a 5 bit code, does that code's
+   asccociated action, and then calls itself with the same arguments.*)
 let rec connection_reader addr r w =
   print_endline "Ready to read";
   Reader.read_line r >>= function
