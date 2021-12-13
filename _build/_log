@@ -1,16 +1,16 @@
 ### Starting build.
-# Target: src/client/client_view.ml.depends, tags: { package(ANSITerminal), package(async), package(core), package(str), extension:ml, file:src/client/client_view.ml, ocaml, ocamldep, quiet, thread }
-ocamlfind ocamldep -package core -package async -package str -package ANSITerminal -modules src/client/client_view.ml > src/client/client_view.ml.depends
-# Target: src/client/client.mli.depends, tags: { package(ANSITerminal), package(async), package(core), package(str), extension:mli, file:src/client/client.mli, ocaml, ocamldep, quiet, thread }
-ocamlfind ocamldep -package core -package async -package str -package ANSITerminal -modules src/client/client.mli > src/client/client.mli.depends
-# Target: src/client/client.cmi, tags: { package(ANSITerminal), package(async), package(core), package(str), byte, compile, extension:mli, file:src/client/client.mli, interf, ocaml, quiet, thread }
-ocamlfind ocamlc -c -thread -package core -package async -package str -package ANSITerminal -I src/client -o src/client/client.cmi src/client/client.mli
-# Target: src/client/client_view.cmo, tags: { package(ANSITerminal), package(async), package(core), package(str), byte, compile, extension:cmo, extension:ml, file:src/client/client_view.cmo, file:src/client/client_view.ml, implem, ocaml, quiet, thread }
-ocamlfind ocamlc -c -thread -package core -package async -package str -package ANSITerminal -I src/client -o src/client/client_view.cmo src/client/client_view.ml
-# Target: src/client/client.ml.depends, tags: { package(ANSITerminal), package(async), package(core), package(str), extension:ml, file:src/client/client.ml, ocaml, ocamldep, quiet, thread }
-ocamlfind ocamldep -package core -package async -package str -package ANSITerminal -modules src/client/client.ml > src/client/client.ml.depends
-# Target: src/client/client.cmo, tags: { package(ANSITerminal), package(async), package(core), package(str), byte, compile, extension:cmo, extension:ml, file:src/client/client.cmo, file:src/client/client.ml, implem, ocaml, quiet, thread }
-ocamlfind ocamlc -c -thread -package core -package async -package str -package ANSITerminal -I src/client -o src/client/client.cmo src/client/client.ml
-# Target: src/client/client_view.byte, tags: { package(ANSITerminal), package(async), package(core), package(str), byte, dont_link_with, extension:byte, file:src/client/client_view.byte, link, ocaml, program, quiet, thread }
-ocamlfind ocamlc -linkpkg -thread -package core -package async -package str -package ANSITerminal -I src/client src/client/client.cmo src/client/client_view.cmo -o src/client/client_view.byte
-# Compilation successful.
+# Target: src/server/server_view.ml.depends, tags: { package(ANSITerminal), package(async), package(core), package(str), extension:ml, file:src/server/server_view.ml, ocaml, ocamldep, quiet, thread }
+ocamlfind ocamldep -package core -package async -package str -package ANSITerminal -modules src/server/server_view.ml > src/server/server_view.ml.depends # cached
+# Target: src/server/server.mli.depends, tags: { package(ANSITerminal), package(async), package(core), package(str), extension:mli, file:src/server/server.mli, ocaml, ocamldep, quiet, thread }
+ocamlfind ocamldep -package core -package async -package str -package ANSITerminal -modules src/server/server.mli > src/server/server.mli.depends
+# Target: src/server/server.cmi, tags: { package(ANSITerminal), package(async), package(core), package(str), byte, compile, extension:mli, file:src/server/server.mli, interf, ocaml, quiet, thread }
+ocamlfind ocamlc -c -thread -package core -package async -package str -package ANSITerminal -I src/server -o src/server/server.cmi src/server/server.mli
+# Target: src/server/server_view.cmo, tags: { package(ANSITerminal), package(async), package(core), package(str), byte, compile, extension:cmo, extension:ml, file:src/server/server_view.cmo, file:src/server/server_view.ml, implem, ocaml, quiet, thread }
+ocamlfind ocamlc -c -thread -package core -package async -package str -package ANSITerminal -I src/server -o src/server/server_view.cmo src/server/server_view.ml
++ ocamlfind ocamlc -c -thread -package core -package async -package str -package ANSITerminal -I src/server -o src/server/server_view.cmo src/server/server_view.ml
+File "src/server/server_view.ml", line 78, characters 7-14:
+78 |   not (Map.mem x str)
+            ^^^^^^^
+Error: Unbound value Map.mem
+Command exited with code 2.
+# Compilation unsuccessful.

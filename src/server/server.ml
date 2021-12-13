@@ -4,12 +4,14 @@ module Acronyms = Map.Make (String)
 
 type uname_and_pwds = (string * string * Writer.t) list
 
-(* type acronyms = (string * (string * string)) list *)
+type acronyms = (string * string) list
+
+type acronyms_map = acronyms Acronyms.t
 
 type server_state = {
   uname_and_pwds : uname_and_pwds;
   curr_users : string list;
-  acronyms : string Acronyms.t;
+  acronyms : acronyms_map;
 }
 
 type output = {

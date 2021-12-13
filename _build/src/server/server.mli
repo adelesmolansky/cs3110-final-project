@@ -4,10 +4,13 @@ open Async
 (* [uname_and_pwds] is the list of usernames and passwords *)
 type uname_and_pwds = (string * string * Writer.t) list
 
+type acronyms = string Map.Make(String).t
+
 (* [server_state] is the current state of the server *)
 type server_state = {
   uname_and_pwds : uname_and_pwds;
   curr_users : string list;
+  acronyms : acronyms;
 }
 
 (* [output] is the output from the server to the user with [uid] *)

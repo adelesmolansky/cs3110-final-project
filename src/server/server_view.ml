@@ -1,6 +1,7 @@
 open Async
 open Async_unix
 open ANSITerminal
+module Acronyms = Map.Make (String)
 
 let server = ref (Server.init_server ())
 
@@ -14,6 +15,7 @@ type msg_to_writer =
   | SIGNUP_ADD_USER
   | ACRONYM_ADD_START
   | ACRONYM_ADD
+  | ACRONYM_EXISTS
   | ACRONYM_NEW_PHRASE
   | ACRONYM_VIEW
   | ACRONYM_DELETE_START
@@ -30,6 +32,7 @@ let send_to_writer = function
   | SIGNUP_ADD_USER -> "true"
   | ACRONYM_ADD_START -> "CREATE_NEW_ACRONYM"
   | ACRONYM_ADD -> "ASK_FOR_PHRASE"
+  | ACRONYM_EXISTS -> "ACRONYM_EXISTS"
   | ACRONYM_NEW_PHRASE -> "ADD_PAIR"
   | ACRONYM_VIEW -> "SEND_ALL"
   | ACRONYM_DELETE_START -> "DELETE_ACRONYM"
@@ -68,6 +71,18 @@ let check_password uname pass =
     | (u, p, w) :: h -> if u = un && p = pa then true else check h un pa
   in
   check x uname pass
+
+let rec check_new_acroynm_h acr acr_list =
+  match acr_list with
+  | [] -> false
+  | (acr', _) :: t ->
+      if acr = acr' then true else check_new_acroynm_h acr t
+
+(* [check_new_acroynm str] returns true if the given acronym is in the
+   server state for the given user and false otherwise.*)
+let rec check_new_acroynm uname str =
+  let x = !server.acronyms in
+  check_new_acroynm_h str (Acronyms.find uname x)
 
 (* [change_pass uname pass wr] changes the password of the client
    associated with Writer.t wr.*)
@@ -148,7 +163,7 @@ let rec connection_reader addr r w =
           else (
             Writer.write_line w (send_to_writer LOGIN_PWD_NO_MATCH);
             connection_reader addr r w)
-      (* Code 00101 adds a password to the server state*)
+      (* Code 00101 adds a password to the server state *)
       | 00101 ->
           let lst = String.split_on_char ':' user_input in
           let uname = List.nth lst 0 and pass = List.nth lst 1 in
@@ -156,12 +171,20 @@ let rec connection_reader addr r w =
             { !server with uname_and_pwds = change_pass uname pass w };
           Writer.write_line w (send_to_writer SIGNUP_ADD_USER);
           connection_reader addr r w
+      (* Code 00110 is to add a new acronym *)
+      | 00110 ->
+          if check_new_acroynm user_input = true then (
+            Writer.write_line w (send_to_writer ACRONYM_ADD);
+            connection_reader addr r w)
+          else (
+            Writer.write_line w (send_to_writer LOGIN_UNAME_EXISTS);
+            connection_reader addr r w)
       | _ -> connection_reader addr r w)
 
 and read_user_input addr user_input r w =
   match user_input with
   | "#add" ->
-      Writer.write_line w (send_to_writer ACRONYM_ADD);
+      Writer.write_line w (send_to_writer ACRONYM_ADD_START);
       connection_reader addr r w
   | "#view" ->
       Writer.write_line w (send_to_writer ACRONYM_VIEW);
