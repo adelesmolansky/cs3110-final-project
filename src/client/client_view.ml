@@ -21,7 +21,6 @@ type acronym_commands =
 (* [client_st] is the initial state of the client. *)
 let client_st = ref (Client.init_state ())
 
-
 let welcome_messages = function
   | INIT ->
       print_endline
@@ -148,10 +147,11 @@ and login_process r w uname =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "UNAME_EXISTS" then (
+      if line = "USER_EXISTS" then (
         print_endline "Please enter your password";
         read_password r w uname EXISTING_USER)
       else (
+        (* NOT_A_USER *)
         print_endline "Sorry, that is not a user in our database";
         read_usern r w EXISTING_USER)
 
@@ -176,10 +176,11 @@ and signup_process r w uname =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "true" then (
+      if line = "CREATE_NEW_USER" then (
         print_endline "Please enter a new password";
         read_password r w uname NEW_USER)
       else (
+        (* NEED_UNIQUE_UNAME *)
         print_endline "Sorry, that is already a user in our database";
         read_usern r w NEW_USER)
 
@@ -194,7 +195,8 @@ and new_password_process r w uname pass =
         print_endline "Sign Up successful";
         return ())
       else (
-        print_endline "Sorry";
+        print_endline
+          "Sorry, that is not a valid password. Please try again";
         read_usern r w NEW_USER)
 
 (* [read_login_or_signup r w] checks if the user wants to log in or sign
@@ -206,78 +208,90 @@ let rec read_login_or_signup r w =
   | `Eof ->
       print_endline "Error reading stdin\n";
       read_login_or_signup r w
-  | `Ok line -> read_input r w line
+  | `Ok line -> read_login_signup_input r w line
 
-and read_input r w str = match str with 
-  | "Log In" -> (
-    welcome_messages LOG_IN;
-    read_usern r w EXISTING_USER)
-  | "Sign Up" -> (
-    welcome_messages SIGN_UP;
-    read_usern r w NEW_USER)
-  | _ -> (
-    print_endline "Please enter a valid command";
-    read_login_or_signup r w)
+and read_login_signup_input r w str =
+  match str with
+  | "Log In" ->
+      welcome_messages LOG_IN;
+      read_usern r w EXISTING_USER
+  | "Sign Up" ->
+      welcome_messages SIGN_UP;
+      read_usern r w NEW_USER
+  | _ ->
+      print_endline "Please enter a valid command";
+      read_login_or_signup r w
 
+(* [login_signup r w] initializes the login and sign up process for a
+   client. A client will login or signup and then enter the general chat
+   room *)
 let login_signup _ r w =
   read_login_or_signup r w >>= fun () ->
   welcome_messages ENTER_CHAT;
   read_write_loop r w;
   Deferred.never ()
 
-let rec is_acronym (str : string) (acronyms_list : (string * string) list) = match acronyms_list with 
-    | [] -> false
-    | (a, _ ) :: t -> if a = str then true else is_acronym str t
+(* let rec is_acronym (str : string) (acronyms_list : (string * string)
+   list) = match acronyms_list with | [] -> false | (a, _ ) :: t -> if a
+   = str then true else is_acronym str t *)
 
-let rec read_acronym str st = 
+(* [read_new_acronym r w] gets calls when a user has entered a new
+   acronym that they want to add to their collection *)
+let rec read_new_acronym r w =
   let input = Lazy.force Reader.stdin in
   Reader.read_line input >>= function
   | `Eof ->
       print_endline "Error reading stdin\n";
-      read_acronym str st
-  | `Ok line -> check_new_acronym line st r w
+      read_new_acronym r w
+  | `Ok line -> check_new_acronym r w line
 
-and check_new_acronym str st r w =
-  let has_blanks =
-    match String.index_opt str ' ' with
-    | Some _ -> true
-    | None -> false
-  in
-  if has_blanks then (
-    print_endline "Error: acronym must contain no blank spaces!"; read_acronym str st 
-  )
-else 
-  if ( is_acronym str st.acronyms) 
-    then (print_endline "this acronym already exists. Please enter a new acronym"; 
-    read_acronym str st ) 
-  else (acronym_messages ADD_PHRASE; read_phrase acronym st r w)
-
-and read_phrase acronym st r w = 
-  let input = Lazy.force Reader.stdin in
-  Reader.read_line input >>= function
+and check_new_acronym r w str =
+  Writer.write_line w ("00110" ^ str);
+  Reader.read_line r >>= function
   | `Eof ->
-      print_endline "Error: cannot read input";
-      read_phrase acronym st r w
-  | `Ok line -> add_phrase acronym line st r w
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      if line = "NEW_ACRONYM" then
+        let has_blanks =
+          match String.index_opt str ' ' with
+          | Some _ -> true
+          | None -> false
+        in
+        if has_blanks then (
+          print_endline "Error: acronym must contain no blank spaces!";
+          read_new_acronym r w)
+        else (
+          print_endline
+            "Please enter the corresponding phrase for your new acronym";
+          acronym_process r w line)
+      else (
+        (* NOT_A_USER *)
+        print_endline
+          "You have already created that acronym. Please enter a new \
+           acronym that you would like to create";
+        read_new_acronym r w)
 
-and add_phrase acronym phrase st r w = 
-  client_st := { !client_st with acronyms = !client_st.acronyms acronym phrase };
+(* ADELE - TODO! *)
+and acronym_process r w acronym = read_new_acronym r w
 
-(* WE NEED TO ADD SMTH TO SERVER_VIEW TO USE THIS FUCTION *)
-(* [interact_acronyms r w str st] matches the [str] that the user
-   entered to check how the user wants to interact with acronyms and
-   instructs the user accordingly *)
-let interact_acronyms r w str st =
-  match str with
-  | "#add" ->
-      acronym_messages ADD_ACRONYM;
-      read_acronym str st
-  | "#view" -> acronym_messages VIEW_ALL; read_write_loop r w; Deferred.never ()
-  | "#delete" -> acronym_messages DELETE; read_write_loop r w; Deferred.never ()
+(* [acronym_add_handler r w] instructs the user on what to do next if a
+   user just entered the #add command *)
+let acronym_add_handler r w =
+  acronym_messages ADD_ACRONYM;
+  read_new_acronym r w
+
+(* [main_acronym_handler server_msg r w] reads a message from the server
+   after a user entered a command to interact with the acronyms and
+   matches the [server_msg] to the next step *)
+let main_acronym_handler server_msg r w =
+  match server_msg with
+  | "CREATE_NEW_ACRONYM" -> acronym_add_handler r w
+  | "SEND_ALL" -> acronym_view_handler r w
+  | "DELETE_ACRONYM" -> acronym_delete_handler r w
   | _ ->
-      print_endline
-        "Please enter a valid command to add, view, and delete an \
-         acronym"; read_write_loop r w;
+      print_endline "Error";
+      return ()
 
 let tcp host port =
   let addr =
