@@ -15,6 +15,7 @@ type method_to_enter_chat =
 type acronym_commands =
   | ADD_ACRONYM
   | ADD_PHRASE
+  | ADD_SUCCESS
   | VIEW_ALL
   | DELETE
 
@@ -49,40 +50,33 @@ let acronym_messages = function
       print_endline
         "Please type the corresponding phrase for the acronym that you \
          just entered"
+  | ADD_SUCCESS -> print_endline "You successfully added a new acronym!"
   | VIEW_ALL ->
       print_endline "Here are a list of all your saved acronyms"
   | DELETE ->
       print_endline
         "Please enter the acronym that you would like to delete"
 
-(* [read r] keeps reading the pipe [r] from the server until the server
-   is successfully connected *)
-let rec read r =
-  Reader.read_line r >>= function
-  | `Eof ->
-      print_endline "Server error, please try again. \n";
-      exit 0
-  | `Ok line ->
-      print_endline line;
-      read r
+(** [pp_string s] pretty-prints string [s]. *)
+let pp_string s = "\"" ^ s ^ "\""
 
-(* [send_msg w] converts the standard input to server input by trimming
-   white space and then recursively calls send_msg to send the inputs to
-   the server. *)
-let rec send_msg w =
-  let stdin = Lazy.force Reader.stdin in
-  Reader.read_line stdin >>= function
-  | `Eof ->
-      print_endline "Error reading stdin\n";
-      return ()
-  | `Ok line ->
-      Writer.write_line w ("00011" ^ line);
-      send_msg w
-
-let read_write_loop r w =
-  don't_wait_for (read r);
-  don't_wait_for (send_msg w);
-  ()
+(** [pp_list pp_elt lst] pretty-prints list [lst], using [pp_elt] to
+    pretty-print each element of [lst]. *)
+let pp_list pp_elt lst =
+  let pp_elts lst =
+    let rec loop n acc = function
+      | [] -> acc
+      | [ (acr, ph) ] -> acc ^ pp_elt acr ^ " = " ^ pp_elt ph
+      | (acr1, ph1) :: (h2 :: t as t') ->
+          if n = 100 then acc ^ "..." (* stop printing long list *)
+          else
+            loop (n + 1)
+              (acc ^ pp_elt acr1 ^ " = " ^ pp_elt ph1 ^ "; ")
+              t'
+    in
+    loop 0 "" lst
+  in
+  "[" ^ pp_elts lst ^ "]"
 
 (* [read_usern r w next_step] checks if the user has properly entered a
    username and recursively calls read_user until the username rules are
@@ -162,12 +156,26 @@ and password_process r w uname pass =
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      if line = "true" then (
-        print_endline "Log In successful";
-        return ())
+      if line = "true" then get_cur_acrs r w uname
       else (
-        print_endline "Sorry, that is not the correct password";
+        print_endline
+          "Sorry, that is not the correct password. Please enter your \
+           username and password again";
         read_usern r w EXISTING_USER)
+
+(* TODO: CONVERT STRING TO LIST AND ADD TO THE CLIENTS ACRONYMS *)
+and get_cur_acrs r w uname =
+  Writer.write_line w ("01000" ^ uname);
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Error: Server connection";
+      return ()
+  | `Ok line ->
+      print_endline "Log In successful";
+      (* FOR NOW JUST PRINT THE USERS ACRONYMS BUT IDEALLY WE ADD IT TO
+         THE CLIENTS LOCAL LIST OF ACRONYMS *)
+      print_endline line;
+      return ()
 
 and signup_process r w uname =
   Writer.write_line w ("00010" ^ uname);
@@ -192,13 +200,20 @@ and new_password_process r w uname pass =
       return ()
   | `Ok line ->
       if line = "true" then (
-        client := { uname; pwd = pass; is_in_chat = true };
+        client :=
+          {
+            username = uname;
+            pwd = pass;
+            is_in_chat = true;
+            acronyms = !client.acronyms;
+          };
         print_endline "Sign Up successful";
         return ())
       else (
         print_endline
-          "Sorry, that is not a valid password. Please try again";
-        read_usern r w NEW_USER)
+          "Sorry, that password is not valid. Please enter a valid \
+           password and try again";
+        read_password r w uname NEW_USER)
 
 (* [read_login_or_signup r w] checks if the user wants to log in or sign
    up and recursively calls read_login_or_signup until the user has made
@@ -223,18 +238,11 @@ and read_login_signup_input r w str =
       print_endline "Please enter a valid command";
       read_login_or_signup r w
 
-(* [login_signup r w] initializes the login and sign up process for a
-   client. A client will login or signup and then enter the general chat
-   room *)
-let login_signup _ r w =
-  read_login_or_signup r w >>= fun () ->
-  welcome_messages ENTER_CHAT;
-  read_write_loop r w;
-  Deferred.never ()
-
-(* let rec is_acronym (str : string) (acronyms_list : (string * string)
-   list) = match acronyms_list with | [] -> false | (a, _ ) :: t -> if a
-   = str then true else is_acronym str t *)
+(* [add_acronym acr phrase] adds the new acronym phrase pair to the
+   clients list *)
+let rec add_acronym acr phrase =
+  client :=
+    { !client with acronyms = (acr, phrase) :: !client.acronyms }
 
 (* [read_new_acronym r w] gets calls when a user has entered a new
    acronym that they want to add to their collection *)
@@ -246,8 +254,9 @@ let rec read_new_acronym r w =
       read_new_acronym r w
   | `Ok line -> check_new_acronym r w line
 
-and check_new_acronym r w str =
-  Writer.write_line w ("00110" ^ !client.uname ^ ":" ^ str);
+and check_new_acronym r w acronym =
+  let uname = !client.username in
+  Writer.write_line w ("00110" ^ uname ^ ":" ^ acronym);
   Reader.read_line r >>= function
   | `Eof ->
       print_endline "Error: Server connection";
@@ -255,7 +264,7 @@ and check_new_acronym r w str =
   | `Ok line ->
       if line = "NEW_ACRONYM" then
         let has_blanks =
-          match String.index_opt str ' ' with
+          match String.index_opt acronym ' ' with
           | Some _ -> true
           | None -> false
         in
@@ -265,52 +274,97 @@ and check_new_acronym r w str =
         else (
           print_endline
             "Please enter the corresponding phrase for your new acronym";
-          acronym_process r w line)
+          read_phrase r w uname acronym)
       else (
-        (* NOT_A_USER *)
+        (* ACRONYM_EXISTS *)
         print_endline
           "You have already created that acronym. Please enter a new \
            acronym that you would like to create";
         read_new_acronym r w)
 
-(* ADELE - TODO! *)
-and acronym_process r w acronym = read_new_acronym r w
+and read_phrase r w uname acronym =
+  let input = Lazy.force Reader.stdin in
+  Reader.read_line input >>= function
+  | `Eof ->
+      print_endline "Error: cannot read input";
+      read_phrase r w uname acronym
+  | `Ok line -> acronym_process r w uname acronym line
 
-(* [acronym_add_handler r w] instructs the user on what to do next if a
-   user just entered the #add command *)
-let acronym_add_handler r w =
-  acronym_messages ADD_ACRONYM;
-  read_new_acronym r w
-
-(* [acronym_view_handler r w] connects to the server to get the clients
-   list of acronyms and then outputs it to the client *)
-let rec acronym_view_handler r w =
-  Writer.write_line w ("00001" ^ !client.uname);
+and acronym_process r w uname acronym phrase =
+  Writer.write_line w
+    ("00111" ^ !client.username ^ ":" ^ acronym ^ ":" ^ phrase);
   Reader.read_line r >>= function
   | `Eof ->
       print_endline "Error: Server connection";
       return ()
   | `Ok line ->
-      print_endline "TODO: SEND ACRONYM LIST";
-      return ()
+      if line = "true" then (
+        add_acronym acronym phrase;
+        print_endline "You successfully added a new acronym and phrase!";
+        return ())
+      else (
+        print_endline
+          "Sorry, that is not a valid phrase. Please enter a new phrase";
+        read_phrase r w uname acronym)
+
+(* [acronym_add_handler r w] instructs the user on what to do next if a
+   user just entered the #add command *)
+let acronym_add_handler r w =
+  acronym_messages ADD_ACRONYM;
+  read_new_acronym r w >>= fun () ->
+  acronym_messages ADD_ACRONYM;
+  Deferred.never ()
 
 let acronym_delete_handler r w =
   acronym_messages DELETE;
   return ()
 
-(* [main_acronym_handler server_msg r w] reads a message from the server
-   after a user entered a command to interact with the acronyms and
-   matches the [server_msg] to the next step *)
-let main_acronym_handler server_msg r w =
-  match server_msg with
-  | "CREATE_NEW_ACRONYM" -> acronym_add_handler r w
-  | "SEND_ALL" ->
-      acronym_messages VIEW_ALL;
-      acronym_view_handler r w
-  | "DELETE_ACRONYM" -> acronym_delete_handler r w
-  | _ ->
-      print_endline "Error";
+(* [read r] keeps reading the pipe [r] from the server until the server
+   is successfully connected *)
+let rec read r w =
+  Reader.read_line r >>= function
+  | `Eof ->
+      print_endline "Server error, please try again. \n";
+      exit 0
+  | `Ok line -> (
+      match line with
+      | "CREATE_NEW_ACRONYM" -> acronym_add_handler r w
+      | "SEND_ALL" ->
+          acronym_messages VIEW_ALL;
+          (* acronym_view_handler r w *)
+          print_endline (pp_list pp_string !client.acronyms);
+          read r w
+      | "DELETE_ACRONYM" -> acronym_delete_handler r w
+      | _ ->
+          print_endline line;
+          read r w)
+
+(* [send_msg w] converts the standard input to server input by trimming
+   white space and then recursively calls send_msg to send the inputs to
+   the server. *)
+let rec send_msg w =
+  let stdin = Lazy.force Reader.stdin in
+  Reader.read_line stdin >>= function
+  | `Eof ->
+      print_endline "Error reading stdin\n";
       return ()
+  | `Ok line ->
+      Writer.write_line w ("00011" ^ line);
+      send_msg w
+
+let read_write_loop r w =
+  don't_wait_for (read r w);
+  don't_wait_for (send_msg w);
+  ()
+
+(* [login_signup r w] initializes the login and sign up process for a
+   client. A client will login or signup and then enter the general chat
+   room *)
+let login_signup _ r w =
+  read_login_or_signup r w >>= fun () ->
+  welcome_messages ENTER_CHAT;
+  read_write_loop r w;
+  Deferred.never ()
 
 let tcp host port =
   let addr =

@@ -40,6 +40,27 @@ let send_to_writer = function
   | ACRONYM_DELETE_PAIR -> "DELETED_PAIR"
   | ACRONYM_DELETE_NO_MATCH -> "DELETE_FAIL"
 
+(** [pp_string s] pretty-prints string [s]. *)
+let pp_string s = "\"" ^ s ^ "\""
+
+(** [pp_list pp_elt lst] pretty-prints list [lst], using [pp_elt] to
+    pretty-print each element of [lst]. *)
+let pp_list pp_elt lst =
+  let pp_elts lst =
+    let rec loop n acc = function
+      | [] -> acc
+      | [ (acr, ph) ] -> acc ^ pp_elt acr ^ " = " ^ pp_elt ph
+      | (acr1, ph1) :: (h2 :: t as t') ->
+          if n = 100 then acc ^ "..." (* stop printing long list *)
+          else
+            loop (n + 1)
+              (acc ^ pp_elt acr1 ^ " = " ^ pp_elt ph1 ^ "; ")
+              t'
+    in
+    loop 0 "" lst
+  in
+  "[" ^ pp_elts lst ^ "]"
+
 (* [look_up wr] returns the option of the username of the client
    associated with the Writer.t wr*)
 let look_up wr =
@@ -73,11 +94,17 @@ let check_password uname pass =
   in
   check x uname pass
 
+(* [find_acr_list uname map] returns the association list that stories
+   the acronyms and phrases that a user [uname] has created. If the
+   username [uname] does not exist in the server, then the function
+   fails *)
 let rec find_acr_list uname map =
   match map with
   | [] -> failwith "User does not exist"
   | (x, lst) :: xs -> if x = uname then lst else find_acr_list uname xs
 
+(* [check_new_acroynm_h acr acr_list] returns true if the acronym is in
+   the association list [acr_list] of acronyms and phrase pairs *)
 let rec check_new_acroynm_h (acr : string) (acr_list : acronyms) =
   match acr_list with
   | [] -> false
@@ -85,7 +112,7 @@ let rec check_new_acroynm_h (acr : string) (acr_list : acronyms) =
       if acr = acr' then true else check_new_acroynm_h acr t
 
 (* [check_new_acroynm uname str] returns true if the given acronym is in
-   the server state for the given user and false otherwise.*)
+   the server state for the given user and false otherwise. *)
 let check_new_acroynm uname str =
   let x = !server.acronyms in
   check_new_acroynm_h str (find_acr_list uname x)
@@ -99,6 +126,24 @@ let change_pass uname pass wr =
     | u1, _, w -> wr != w
   in
   (uname, pass, wr) :: List.filter check x
+
+(* [update_acronyms uname acronym phrase lst] updates the association
+   list stored in server.acronyms with the new acronym [acronym] phrase
+   [phrase] pair for the given user [uname] *)
+let rec update_acronyms
+    (uname : string)
+    (acronym : string)
+    (phrase : string)
+    (lst : (string * acronyms) list) : (string * acronyms) list =
+  let new_pair = (acronym, phrase) in
+  match lst with
+  | [] -> failwith "User does not exist"
+  | (u, acr_lst) :: t ->
+      if u = uname then (u, new_pair :: acr_lst) :: t
+      else update_acronyms uname acronym phrase t
+
+let get_acr_lst uname =
+  pp_list pp_string (find_acr_list uname !server.acronyms)
 
 (* [send_all_message writer str] loops through all the clients in the
    server state, throwing out the client with the Writer.t writer.
@@ -152,6 +197,7 @@ let rec connection_reader addr r w =
                 uname_and_pwds =
                   Server.new_user_pwd user_input "" w !server;
               };
+            (* TODO: NEED TO INITIALIZE A USER IN THE ACRONYM LIST *)
             connection_reader addr r w)
           else (
             Writer.write_line w (send_to_writer SIGNUP_UNAME_EXISTS);
@@ -175,18 +221,43 @@ let rec connection_reader addr r w =
           let uname = List.nth lst 0 and pass = List.nth lst 1 in
           server :=
             { !server with uname_and_pwds = change_pass uname pass w };
+          server :=
+            { !server with acronyms = (uname, []) :: !server.acronyms };
+
           Writer.write_line w (send_to_writer SIGNUP_ADD_USER);
           connection_reader addr r w
-      (* Code 00110 is to add a new acronym *)
+      (* Code 00110: check if acronym exists for the user *)
       | 00110 ->
-          let pair = String.split_on_char ':' user_input in
-          let uname = List.nth pair 0 and acr = List.nth pair 1 in
-          if check_new_acroynm uname acr = true then (
+          let lst = String.split_on_char ':' user_input in
+          let uname = List.nth lst 0 and acr = List.nth lst 1 in
+          if check_new_acroynm uname acr = false then (
             Writer.write_line w (send_to_writer ACRONYM_ADD);
             connection_reader addr r w)
           else (
-            Writer.write_line w (send_to_writer LOGIN_UNAME_EXISTS);
+            Writer.write_line w (send_to_writer ACRONYM_EXISTS);
             connection_reader addr r w)
+      (* Code 00111: add a new acronym and phrase to server.acronyms *)
+      | 00111 ->
+          let lst = String.split_on_char ':' user_input in
+          let uname = List.nth lst 0
+          and acr = List.nth lst 1
+          and phrase = List.nth lst 2 in
+          let curr_acronyms = !server.acronyms in
+          server :=
+            {
+              !server with
+              acronyms = update_acronyms uname acr phrase curr_acronyms;
+            };
+          Writer.write_line w (send_to_writer ACRONYM_NEW_PHRASE);
+          connection_reader addr r w
+      (* Code 01000: send the users acroynm list to the client *)
+      | 01000 ->
+          let acr_str =
+            pp_list pp_string
+              (find_acr_list user_input !server.acronyms)
+          in
+          Writer.write_line w acr_str;
+          connection_reader addr r w
       | _ -> connection_reader addr r w)
 
 and read_user_input addr user_input r w =
