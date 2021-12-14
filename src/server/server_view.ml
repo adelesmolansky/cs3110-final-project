@@ -226,18 +226,8 @@ let rec connection_reader addr r w =
 
           Writer.write_line w (send_to_writer SIGNUP_ADD_USER);
           connection_reader addr r w
-      (* Code 00110: check if acronym exists for the user *)
+      (* Code 00110: add a new acronym and phrase to server.acronyms *)
       | 00110 ->
-          let lst = String.split_on_char ':' user_input in
-          let uname = List.nth lst 0 and acr = List.nth lst 1 in
-          if check_new_acroynm uname acr = false then (
-            Writer.write_line w (send_to_writer ACRONYM_ADD);
-            connection_reader addr r w)
-          else (
-            Writer.write_line w (send_to_writer ACRONYM_EXISTS);
-            connection_reader addr r w)
-      (* Code 00111: add a new acronym and phrase to server.acronyms *)
-      | 00111 ->
           let lst = String.split_on_char ':' user_input in
           let uname = List.nth lst 0
           and acr = List.nth lst 1
@@ -250,8 +240,8 @@ let rec connection_reader addr r w =
             };
           Writer.write_line w (send_to_writer ACRONYM_NEW_PHRASE);
           connection_reader addr r w
-      (* Code 01000: send the users acroynm list to the client *)
-      | 01000 ->
+      (* Code 00111: send the users acroynm list to the client *)
+      | 00111 ->
           let acr_str =
             pp_list pp_string
               (find_acr_list user_input !server.acronyms)
