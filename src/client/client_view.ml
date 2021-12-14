@@ -19,6 +19,7 @@ type acronym_commands =
   | VIEW_ALL
   | DELETE
   | DELETE_SUCCESS
+  | EXIT_ACRONYMS
 
 (* [client] is the initial state of the client. *)
 let client = ref (Client.init_state ())
@@ -59,6 +60,7 @@ let acronym_messages = function
         "Please enter the acronym that you would like to delete"
   | DELETE_SUCCESS ->
       print_endline "You successfully deleted an acronym!"
+  | EXIT_ACRONYMS -> print_endline "You are back in the chatroom"
 
 (** [pp_string s] pretty-prints string [s]. *)
 let pp_string s = "\"" ^ s ^ "\""
@@ -247,15 +249,23 @@ let rec add_acronym acr phrase =
   client :=
     { !client with acronyms = (acr, phrase) :: !client.acronyms }
 
+(* [is_new_acr acronym lst] reutrns true if the acronym is not in the
+   association list that stores the clients acronyms and returns false
+   otherwise *)
 let rec is_new_acr acronym lst =
   match lst with
   | [] -> true
   | (a, _) :: t -> if a = acronym then false else is_new_acr acronym t
 
+(* [check_valid_acr acronym] checks if the acronym is a valid acronym *)
 let rec check_valid_acr acronym =
   match String.index_opt acronym ' ' with
   | Some _ -> false
   | None -> true
+
+let check_valid_phrase acronym phrase =
+  let phrase_lst = String.split_on_char ' ' phrase in
+  if List.length phrase_lst = String.length acronym then true else false
 
 (* [read_new_acronym r w] gets calls when a user has entered a new
    acronym that they want to add to their collection *)
@@ -352,10 +362,28 @@ and check_old_acronym r w acronym =
       read_phrase r w !client.username acronym
   | true ->
       print_endline
-        "This acroynm does not exist. Please enter an acronym that you \
-         have created in the past.";
-      read_delete_acronym r w
-(* TODO: ADD A WAY TO TRANFER TO ADDING A NEW ACROYNM INSTEAD *)
+        "This acroynm does not exist. Would you like to proceeed with \
+         deleting an acronym?";
+      print_endline "Enter (Y/N)";
+      check_delete_next_step r w
+
+and check_delete_next_step r w =
+  let input = Lazy.force Reader.stdin in
+  Reader.read_line input >>= function
+  | `Eof ->
+      print_endline "Error reading stdin\n";
+      check_delete_next_step r w
+  | `Ok line -> (
+      match line with
+      | "Y" ->
+          acronym_messages DELETE;
+          read_delete_acronym r w
+      | "N" ->
+          acronym_messages EXIT_ACRONYMS;
+          return ()
+      | _ ->
+          print_endline "Please enter Y or N";
+          check_delete_next_step r w)
 
 let acronym_delete_handler r w =
   acronym_messages DELETE;
